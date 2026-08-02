@@ -620,10 +620,10 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
 .card:hover .card-body h3{color:var(--maroon-light);}
 
 /* ---------- INTRO / WELCOME (first-run onboarding) ---------- */
-#introOverlay{position:fixed; inset:0; z-index:310; background:radial-gradient(circle at 50% 15%, var(--maroon-glow), transparent 55%), var(--bg); display:flex; align-items:center; justify-content:center;}
+#introOverlay{position:fixed; inset:0; z-index:310; background:radial-gradient(circle at 50% 15%, var(--maroon-glow), transparent 55%), var(--bg); display:flex; align-items:flex-start; justify-content:center; overflow-y:auto;}
 #introOverlay.hidden{display:none;}
-.intro-stage{max-width:var(--phone-w); width:100%; margin:0 auto; padding:32px 28px; display:flex; flex-direction:column; align-items:center; text-align:center;}
-.intro-slide-img{width:100%; max-width:260px; aspect-ratio:1/1; object-fit:cover; border-radius:18px; border:1px solid var(--line); background:var(--panel); margin-bottom:30px; box-shadow:0 0 40px rgba(0,0,0,.5);}
+.intro-stage{max-width:var(--phone-w); width:100%; margin:0 auto; padding:32px 28px; display:flex; flex-direction:column; align-items:center; text-align:center; min-height:100%;}
+.intro-slide-img{width:100%; max-width:260px; aspect-ratio:1/1; object-fit:contain; border-radius:18px; border:1px solid var(--line); background:var(--panel); margin-bottom:30px; box-shadow:0 0 40px rgba(0,0,0,.5);}
 .intro-title{font-family:'Cormorant SC',serif; font-weight:600; font-size:26px; letter-spacing:2px; color:var(--cream); margin-bottom:12px;}
 .intro-text{font-size:14px; line-height:1.75; color:var(--muted); max-width:340px; margin-bottom:30px;}
 .intro-dots{display:flex; gap:6px; margin-bottom:26px;}
@@ -1512,7 +1512,9 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
       </div>
 
       <h3 style="font-family:'Cormorant SC',serif; letter-spacing:2px; font-size:18px; margin:26px 0 10px; color:var(--cream);">Welcome / Intro Screens</h3>
+      <div class="admin-sub" style="margin-bottom:10px;">This screen shows to every visitor, every time they open the site. Use "Preview" below to see it without leaving Admin.</div>
       <div class="admin-toolbar" style="justify-content:flex-end;">
+        <button class="btn secondary" onclick="previewIntro()">👁 Preview Intro</button>
         <button class="btn" onclick="openIntroSlideForm()">+ Add Screen</button>
       </div>
       <div class="form-panel" id="introSlideFormPanel">
@@ -4546,21 +4548,18 @@ function chooseProgram(type){
 }
 function openProgramChoose(){ navigateTo('programchoose'); }
 
-/* ================= INTRO / WELCOME (first-run onboarding, admin-editable) =================
-   A short sequence of image+text screens shown once, on top of the Store/Academy/Camp/Private
-   menu, before a visitor can reach it. Content comes from INTRO_SLIDES (Admin > Intro / Home
-   Screen); if the admin hasn't added any yet, a single default ATLAS welcome screen is shown.
-   Skipped on repeat visits via a localStorage flag. */
+/* ================= INTRO / WELCOME (shown every visit, admin-editable) =================
+   A short sequence of image+text screens shown on top of the Store/Academy/Camp/Private
+   menu, before a visitor can reach it — every time the site is opened. Content comes from
+   INTRO_SLIDES (Admin > Intro / Home Screen); if the admin hasn't added any yet, a single
+   default ATLAS welcome screen is shown. */
 function defaultIntroSlides(){
   return [{ id:'default', image:null, title:'Welcome to ATLAS', text:'Rise Above. Be Atlas. Explore our Store, Academy, Camps and Private training — all in one place.' }];
 }
 function introSlideList(){ return (INTRO_SLIDES && INTRO_SLIDES.length) ? INTRO_SLIDES : defaultIntroSlides(); }
 function initIntro(){
-  let seen = false;
-  try{ seen = localStorage.getItem('atlas_intro_seen') === '1'; }catch(e){}
   const overlay = document.getElementById('introOverlay');
   if(!overlay) return;
-  if(seen){ overlay.classList.add('hidden'); return; }
   introIdx = 0;
   renderIntro();
 }
@@ -4583,9 +4582,19 @@ function introNext(){
 }
 function introSkip(){ finishIntro(); }
 function finishIntro(){
-  try{ localStorage.setItem('atlas_intro_seen', '1'); }catch(e){}
   const overlay = document.getElementById('introOverlay');
   if(overlay) overlay.classList.add('hidden');
+}
+/* Lets the admin re-watch the intro at any time (e.g. right after editing it) without having
+   to clear the browser's localStorage. Does NOT reset the "seen" flag for real visitors. */
+function previewIntro(){
+  const overlay = document.getElementById('introOverlay');
+  if(!overlay) return;
+  const adminEl = document.getElementById('admin');
+  if(adminEl) adminEl.classList.add('hidden');
+  overlay.classList.remove('hidden');
+  introIdx = 0;
+  renderIntro();
 }
 
 /* ================= HOME TILES (Store/Academy/Camp/Private thumbnail images + text) ================= */
