@@ -124,18 +124,6 @@ header.site-header{position:absolute; top:14px; left:0; right:0; z-index:40; pad
 .banner-content .cta-hero{margin-top:0; padding:18px 46px; font-size:13px; letter-spacing:4px; background:rgba(161,49,72,0.16); backdrop-filter:blur(2px); box-shadow:0 0 40px var(--maroon-glow);}
 .banner-content .cta-hero:hover{transform:translateY(-1px);}
 
-/* ---------- AUTO-MOVING SLIDES BANNER ---------- */
-.slides-banner{position:relative; width:100%; aspect-ratio:16/8; overflow:hidden; background:var(--bg-alt);}
-.slides-banner.hidden{display:none;}
-.slides-track{display:flex; height:100%; transition:transform .7s cubic-bezier(.4,0,.2,1);}
-.slides-track img{width:100%; height:100%; object-fit:cover; flex-shrink:0;}
-.slides-dots{position:absolute; bottom:10px; left:0; right:0; display:flex; justify-content:center; gap:6px; z-index:2;}
-.slides-dots span{width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.45); transition:.2s;}
-.slides-dots span.active{background:#fff; width:16px; border-radius:4px;}
-@media(min-width:860px){ .slides-banner{aspect-ratio:16/5;} }
-
-.ship-strip{background:var(--maroon); color:#fff; text-align:center; padding:8px; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; overflow:hidden; white-space:nowrap;}
-
 /* ---------- SECTIONS ---------- */
 .section-wrap{padding:34px 16px;}
 .section-title{font-family:'Cormorant SC',serif; font-size:26px; letter-spacing:3px; text-align:center; margin-bottom:4px;}
@@ -150,23 +138,89 @@ header.site-header{position:absolute; top:14px; left:0; right:0; z-index:40; pad
 .cat-tile .cat-label::after{content:''; display:block; width:22px; height:2px; background:var(--maroon-light); margin-top:6px; transition:width .3s ease;}
 .cat-tile:hover .cat-label::after{width:38px;}
 
+/* ---------- SHOP BY CATEGORIES (hero circle row, replaces the old banner) ---------- */
+#storeHomeTop{padding-top:88px;} /* clears the floating header pill; lives on the wrapper so it applies whether or not the slides banner is showing */
+
+/* ---------- AUTO-MOVING SLIDES BANNER (super-admin managed images, sits above Shop by Category) ---------- */
+.slides-banner{position:relative; width:100%; max-width:var(--phone-w); margin:0 auto 22px; overflow:hidden; border-radius:16px; background:var(--panel);}
+.slides-banner.hidden{display:none;}
+.slides-track{display:flex; transition:transform .5s ease;}
+.slides-track img{flex:0 0 100%; width:100%; height:170px; object-fit:cover; display:block;}
+.slides-dots{position:absolute; left:0; right:0; bottom:10px; display:flex; justify-content:center; gap:6px; z-index:2;}
+.slides-dots span{width:6px; height:6px; border-radius:50%; background:rgba(245,245,243,0.4); transition:.2s;}
+.slides-dots span.active{background:var(--maroon-light); width:16px; border-radius:4px;}
+@media(min-width:860px){ .slides-track img{height:220px;} }
+.cat-circle-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:18px;}
+.cat-circle-title{font-family:'Cormorant SC',serif; font-size:20px; letter-spacing:1.5px; color:var(--cream); font-weight:600; margin:0; text-align:left;}
+html[dir="rtl"] .cat-circle-title{text-align:right;}
+.cat-circle-viewall{font-size:11px; letter-spacing:.5px; color:var(--muted); display:flex; align-items:center; gap:4px; white-space:nowrap; flex-shrink:0;}
+.cat-circle-viewall:hover{color:var(--maroon-light);}
+.cat-arrow{display:inline-block; transition:.2s;}
+html[dir="rtl"] .cat-arrow{transform:scaleX(-1);}
+
+/* ---------- CATEGORY / BRAND CIRCLE STRIP (shared base style) ---------- */
+.cat-circle-wrap{padding:0 0 6px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch;}
+.cat-circle-wrap.hidden{display:none;}
+.cat-circle-wrap::-webkit-scrollbar{display:none;}
+.cat-circle-strip{display:flex; gap:18px; padding:2px 2px 8px;}
+.cat-circle{flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; width:68px;}
+.cat-circle-img{width:60px; height:60px; border-radius:50%; overflow:hidden; border:1.5px solid var(--line); background:var(--panel); display:flex; align-items:center; justify-content:center; transition:.2s;}
+.cat-circle-img img{width:100%; height:100%; object-fit:cover;}
+.cat-circle:hover .cat-circle-img{border-color:var(--maroon-light); box-shadow:0 0 14px var(--maroon-glow);}
+.cat-circle-name{font-size:10.5px; letter-spacing:.5px; color:var(--muted); text-align:center; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:68px;}
+@media(min-width:860px){ .cat-circle-strip{justify-content:center; flex-wrap:wrap;} .cat-circle-img{width:72px; height:72px;} }
+
+/* pastel, icon-style circles specifically for the "Shop by Categories" hero row —
+   each tile gets a soft background color (set inline per category) with the photo
+   shown contained rather than cropped, so it reads as an icon sitting on a pastel disc. */
+#catCircleSection .cat-circle{width:76px;}
+#catCircleSection .cat-circle-img{width:64px; height:64px; border:none;}
+#catCircleSection .cat-circle-img img{width:62%; height:62%; object-fit:contain;}
+#catCircleSection .cat-circle-name{text-transform:none; letter-spacing:0; font-size:12px; color:var(--cream); font-weight:500; max-width:76px;}
+@media(min-width:860px){ #catCircleSection .cat-circle-img{width:80px; height:80px;} }
+
+/* ---------- BRAND / VENDOR ADMIN ROLE SCOPING ---------- */
+#adminNav.role-brand .role-super{display:none;}
+#admin.brand-mode .role-super{display:none !important;}
+.brand-admin-badge{display:inline-block; margin-left:8px; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--maroon-light); border:1px solid var(--maroon-light); border-radius:20px; padding:2px 10px;}
+#sec-statistics.brand-mode > *{display:none;}
+#sec-statistics.brand-mode > .admin-h1, #sec-statistics.brand-mode > .admin-sub, #sec-statistics.brand-mode > #brandStatsView{display:block;}
+/* brandStatsView (per-brand "My Products" box) is for a logged-in brand vendor only — the
+   super admin gets the richer, all-brands overview below instead. */
+#brandStatsView{display:none;}
+#sec-statistics.brand-mode #brandStatsView{display:block;}
+#superBrandsOverview{display:block;}
+#sec-statistics.brand-mode #superBrandsOverview{display:none;}
+.brand-sentiment-good{color:#5cb85c;}
+.brand-sentiment-mixed{color:var(--gold);}
+.brand-sentiment-poor{color:var(--danger);}
+.brand-thumb{width:44px; height:44px; border-radius:50%; object-fit:cover; border:1px solid var(--line);}
+
 .cat-strip{display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; margin-bottom:24px;}
 .cat-chip{flex:0 0 auto; padding:8px 16px; border:1px solid var(--line); border-radius:20px; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); white-space:nowrap;}
 .cat-chip.active,.cat-chip:hover{border-color:var(--maroon-light); color:var(--cream);}
 
 .grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; position:relative; overflow:hidden; transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:18px; position:relative; overflow:hidden; transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;}
 .card:hover{transform:translateY(-4px); border-color:var(--maroon-light); box-shadow:0 14px 30px rgba(0,0,0,.45), 0 0 0 1px var(--maroon-glow);}
-.card .imgwrap{position:relative; aspect-ratio:3/4; overflow:hidden; background:#1c1518;}
-.card .imgwrap img{width:100%; height:100%; object-fit:cover; filter:grayscale(.55) contrast(1.08) brightness(.92); transition:transform .5s ease;}
+.card .imgwrap{position:relative; aspect-ratio:4/5; overflow:hidden; background:#1c1518;}
+.card .imgwrap img{width:100%; height:100%; object-fit:cover; filter:contrast(1.06) brightness(.96); transition:transform .5s ease;}
 .card:hover .imgwrap img{transform:scale(1.06);}
-.card .imgwrap::after{content:''; position:absolute; inset:0; background:linear-gradient(160deg, var(--maroon-glow), transparent 55%); mix-blend-mode:screen; opacity:.5;}
+.card .imgwrap::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg, transparent 55%, rgba(8,7,7,.6) 100%); pointer-events:none;}
 .tag{position:absolute; top:8px; left:8px; background:var(--maroon); color:#fff; font-size:10px; font-weight:600; padding:3px 7px; letter-spacing:.5px; z-index:2; border-radius:4px;}
 .soldout-badge{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(10,9,9,0.55); z-index:2;}
 .soldout-badge span{border:1px solid var(--cream); padding:6px 14px; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; border-radius:20px;}
-.card-body{padding:14px;}
-.card-body .cat{font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-bottom:4px;}
-.card-body h3{font-family:'Cormorant SC',serif; font-weight:600; font-size:15px; margin-bottom:8px; line-height:1.3; color:var(--cream);}
+.card-price-float{position:absolute; left:8px; bottom:8px; z-index:2; display:flex; align-items:baseline; gap:6px; background:rgba(10,9,9,0.65); backdrop-filter:blur(4px); padding:5px 10px; border-radius:20px; flex-wrap:wrap;}
+.card-price-float .price{font-size:13px; color:var(--cream);}
+.card-price-float .price.discount{color:var(--maroon-light); font-weight:500;}
+.card-price-float .price.strike{color:var(--muted); text-decoration:line-through; font-size:11px;}
+.quick-add-fab{position:absolute; right:8px; bottom:8px; z-index:2; width:34px; height:34px; border-radius:50%; background:var(--maroon-light); color:#0A0A0A; font-size:16px; display:flex; align-items:center; justify-content:center; border:none; box-shadow:0 4px 12px rgba(0,0,0,.4); transition:.2s;}
+.quick-add-fab:hover{transform:scale(1.08);}
+.quick-add-fab:disabled{opacity:.45; background:var(--muted); cursor:not-allowed;}
+.card-body{padding:12px 14px 14px;}
+.card-body .card-brand{font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-bottom:3px; display:flex; align-items:center; gap:4px;}
+.card-body .cat{font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:4px;}
+.card-body h3{font-family:'Cormorant SC',serif; font-weight:600; font-size:15px; margin-bottom:0; line-height:1.3; color:var(--cream);}
 .price-row{display:flex; align-items:baseline; gap:7px; margin-bottom:12px; flex-wrap:wrap;}
 .price{font-size:14px; color:var(--cream);}
 .price.discount{color:var(--maroon-light); font-weight:500;}
@@ -175,6 +229,16 @@ header.site-header{position:absolute; top:14px; left:0; right:0; z-index:40; pad
 .quick-add:hover{background:var(--maroon-light); border-color:var(--maroon-light); color:#0A0A0A;}
 .quick-add:disabled{opacity:.4; cursor:not-allowed;}
 
+/* ---------- BRAND SHOWCASE CARDS (distinct from category tiles) ---------- */
+.brand-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:30px;}
+@media(min-width:860px){ .brand-grid{grid-template-columns:repeat(4,1fr);} }
+.brand-card{display:flex; flex-direction:column; align-items:center; gap:9px; padding:18px 8px 15px; background:var(--panel); border:1px solid var(--line); border-radius:16px; cursor:pointer; transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;}
+.brand-card:hover{transform:translateY(-3px); border-color:var(--maroon-light); box-shadow:0 10px 26px rgba(0,0,0,.4);}
+.brand-card-logo{width:60px; height:60px; border-radius:50%; overflow:hidden; border:1.5px solid var(--maroon-light); background:#1c1518; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 4px var(--maroon-glow);}
+.brand-card-logo img{width:100%; height:100%; object-fit:cover;}
+.brand-card-name{font-family:'Cormorant SC',serif; font-weight:600; font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--cream); text-align:center; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.brand-card-count{font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--muted);}
+
 footer.site-footer{border-top:1px solid var(--line); margin-top:20px; padding:40px 20px 24px; text-align:center; color:var(--muted); font-size:11px;}
 footer.site-footer .flogo{font-family:'Cormorant SC',serif; color:var(--maroon-light); font-size:20px; letter-spacing:5px; margin-bottom:12px;}
 footer.site-footer p{max-width:340px; margin:0 auto 16px; line-height:1.7;}
@@ -182,22 +246,25 @@ footer.site-footer p{max-width:340px; margin:0 auto 16px; line-height:1.7;}
 .foot-icons span, .foot-icons a{width:32px; height:32px; border:1px solid var(--line); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--cream);}
 .foot-icons a:hover{border-color:var(--maroon-light); color:var(--maroon-light);}
 
-/* bottom tab bar like reference app */
-.tabbar{position:sticky; bottom:0; z-index:30; background:rgba(10,9,9,0.94); backdrop-filter:blur(10px); border-top:1px solid var(--line); display:flex;}
-.tabbar button{flex:1; background:none; color:var(--muted); font-size:10px; letter-spacing:.5px; padding:10px 4px 12px; display:flex; flex-direction:column; align-items:center; gap:4px;}
-.tabbar button .ti{font-size:17px; position:relative;}
-.tabbar button.active{color:var(--cream);}
+/* bottom tab bar — floating dock, unified stroke icons, gold active state matching the ATLAS identity */
+.tabbar{position:sticky; bottom:0; z-index:30; display:flex; margin:0 12px 12px; padding:6px 4px; border-radius:22px; background:rgba(20,18,16,0.92); backdrop-filter:blur(14px); border:1px solid var(--line); box-shadow:0 12px 32px rgba(0,0,0,.5);}
+.tabbar button{flex:1; background:none; color:var(--muted); font-size:9.5px; letter-spacing:.5px; padding:8px 4px 6px; display:flex; flex-direction:column; align-items:center; gap:4px; border-radius:16px; position:relative; transition:color .2s ease;}
+.tabbar button .ti{font-size:17px; position:relative; transition:transform .2s ease;}
+.tabbar button.active{color:var(--maroon-light);}
+.tabbar button.active .ti{transform:translateY(-1px);}
+.tabbar button.active::after{content:''; position:absolute; bottom:1px; width:4px; height:4px; border-radius:50%; background:var(--maroon-light);}
 .tabbar button .ti .badge{top:-6px; right:-10px;}
 .tabbar .cart-tab{position:relative;}
+.tabbar .cart-tab.active::after{display:none;}
 .tabbar .cart-tab .cart-fab{
-  width:46px; height:46px; border-radius:50%; background:linear-gradient(160deg, var(--danger), var(--maroon));
-  display:flex; align-items:center; justify-content:center; margin-top:-26px; position:relative;
-  border:3px solid var(--bg); box-shadow:0 6px 18px rgba(178,58,79,.55); font-size:18px; color:#fff;
-  transition:.2s;
+  width:44px; height:44px; border-radius:50%; background:linear-gradient(155deg, var(--maroon-light), var(--maroon));
+  display:flex; align-items:center; justify-content:center; margin-top:-24px; position:relative;
+  border:3px solid var(--bg); box-shadow:0 8px 20px rgba(200,155,74,.45); font-size:18px; color:#141210;
+  transition:.25s ease;
 }
-.tabbar .cart-tab:hover .cart-fab{transform:translateY(-2px); box-shadow:0 8px 22px rgba(178,58,79,.7);}
-.tabbar .cart-tab .cart-fab .badge{background:#fff; color:var(--danger); top:-5px; right:-6px;}
-.tabbar .cart-tab .cart-tab-label{color:var(--danger); font-weight:500; margin-top:1px;}
+.tabbar .cart-tab:hover .cart-fab{transform:translateY(-2px) scale(1.04); box-shadow:0 10px 24px rgba(200,155,74,.6);}
+.tabbar .cart-tab .cart-fab .badge{background:var(--bg); color:var(--maroon-light); border:1px solid var(--maroon-light); top:-5px; right:-6px;}
+.tabbar .cart-tab .cart-tab-label{color:var(--cream); font-weight:500; margin-top:1px;}
 
 /* ---------- OVERLAYS (product page / cart / menu all sized to phone) ---------- */
 .overlay{position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:80; display:flex; justify-content:center;}
@@ -212,12 +279,18 @@ footer.site-footer p{max-width:340px; margin:0 auto 16px; line-height:1.7;}
 .product-panel{position:absolute; inset:0; background:var(--bg); overflow-y:auto;}
 .pp-topbar{position:sticky; top:0; z-index:5; display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:rgba(10,9,9,0.85); backdrop-filter:blur(8px);}
 .pp-topbar button{background:none; color:var(--cream); font-size:20px;}
+.pp-top-actions{display:flex; gap:6px;}
+.pp-icon-btn{width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:var(--cream); transition:.2s ease;}
+.pp-icon-btn:hover{border-color:var(--maroon-light); color:var(--maroon-light);}
+.pp-icon-btn svg{width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round;}
+.pp-icon-btn.active{color:var(--danger); border-color:var(--danger);}
+.pp-icon-btn.active svg{fill:var(--danger);}
 .pp-main-img{aspect-ratio:4/5; overflow:hidden; background:#1c1518;}
 .pp-main-img img{width:100%; height:100%; object-fit:cover; filter:grayscale(.4) contrast(1.05);}
 .pp-thumbs{display:flex; gap:8px; padding:10px 16px; overflow-x:auto;}
-.pp-thumbs img{width:56px; height:70px; object-fit:cover; filter:grayscale(.5); border:1px solid var(--line); flex:0 0 auto; cursor:pointer;}
-.pp-thumbs img.active{border-color:var(--maroon-light);}
-.pp-body{padding:6px 20px 30px;}
+.pp-thumbs img{width:56px; height:70px; object-fit:cover; filter:grayscale(.5); border:1px solid var(--line); border-radius:6px; flex:0 0 auto; cursor:pointer; transition:.2s ease;}
+.pp-thumbs img.active{border-color:var(--maroon-light); filter:grayscale(0); transform:translateY(-3px); box-shadow:0 6px 14px var(--maroon-glow);}
+.pp-body{padding:6px 20px 12px;}
 .pp-body .cat{font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:6px;}
 .pp-body h2{font-family:'Cormorant SC',serif; font-size:26px; margin-bottom:12px;}
 .pp-price-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px;}
@@ -227,12 +300,13 @@ footer.site-footer p{max-width:340px; margin:0 auto 16px; line-height:1.7;}
 .stock-dot{width:8px; height:8px; border-radius:50%; background:var(--ok);}
 .stock-dot.low{background:var(--gold);}
 .stock-dot.out{background:var(--danger);}
-.stock-bar{height:3px; background:var(--line); margin-bottom:20px; overflow:hidden;}
-.stock-bar span{display:block; height:100%; background:var(--gold);}
+.stock-bar{height:4px; background:var(--line); margin-bottom:20px; overflow:hidden; border-radius:3px;}
+.stock-bar span{display:block; height:100%; background:linear-gradient(90deg, var(--maroon), var(--maroon-light)); border-radius:3px;}
 .opt-label{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin:16px 0 8px;}
 .opt-row{display:flex; gap:8px; flex-wrap:wrap;}
-.opt-btn{padding:9px 14px; border:1px solid var(--line); font-size:12px; background:transparent; color:var(--cream); min-width:44px; text-align:center;}
-.opt-btn.active{border-color:var(--maroon-light); background:var(--maroon-light);}
+.opt-btn{padding:9px 16px; border:1px solid var(--line); font-size:12px; background:transparent; color:var(--cream); min-width:44px; text-align:center; border-radius:20px; transition:.2s ease;}
+.opt-btn.active{border-color:var(--maroon-light); background:var(--maroon-light); color:#141210; font-weight:500;}
+.opt-btn:hover:not(.active):not(:disabled){border-color:var(--maroon-light); color:var(--maroon-light);}
 .opt-btn:disabled{color:var(--muted); text-decoration:line-through; opacity:.35; cursor:not-allowed;}
 /* Admin product-form size toggles — click a size chip to flip it between
    "in stock" and "sold out" instead of hand-editing a comma list. */
@@ -242,19 +316,19 @@ footer.site-footer p{max-width:340px; margin:0 auto 16px; line-height:1.7;}
 .pf-size-chip.off{border-color:var(--danger); background:rgba(178,58,79,0.14); color:var(--muted); text-decoration:line-through;}
 .pf-size-typetoggle{display:flex; gap:8px; margin-top:6px;}
 .qty-row{display:flex; align-items:center; gap:14px; margin-top:20px;}
-.qty-row .stepper{display:flex; align-items:center; border:1px solid var(--line);}
-.qty-row .stepper button{padding:8px 14px; background:none; color:var(--cream);}
-.qty-row .stepper span{padding:0 14px;}
-.pp-actions{display:flex; gap:10px; margin-top:22px;}
-.add-cart-btn{flex:1; padding:15px; background:var(--maroon); color:#fff; letter-spacing:2.5px; font-size:12px; text-transform:uppercase;}
+.qty-row .stepper{display:flex; align-items:center; border:1px solid var(--line); border-radius:24px; overflow:hidden;}
+.qty-row .stepper button{padding:8px 16px; background:none; color:var(--cream); font-size:15px; transition:color .2s ease;}
+.qty-row .stepper button:hover{color:var(--maroon-light);}
+.qty-row .stepper span{padding:0 4px; min-width:22px; text-align:center; font-size:13px;}
+.pp-sticky-actions{position:sticky; bottom:0; z-index:6; display:flex; gap:10px; margin:26px -20px 0; padding:14px 20px calc(14px + env(safe-area-inset-bottom, 0px)); background:linear-gradient(180deg, rgba(10,9,9,0) 0%, var(--bg) 26%); border-top:1px solid var(--line);}
+.add-cart-btn{flex:1.6; padding:15px; background:var(--maroon); color:#fff; letter-spacing:2.5px; font-size:12px; text-transform:uppercase; border-radius:4px;}
 .add-cart-btn:hover{background:var(--maroon-light);}
-.wish-btn{width:50px; border:1px solid var(--line); color:var(--cream); font-size:17px;}
-.wish-btn.active{color:var(--maroon-light); border-color:var(--maroon-light);}
-.buy-now-btn{width:100%; margin-top:10px; padding:15px; background:var(--maroon-light); color:#fff; letter-spacing:2.5px; font-size:12px; text-transform:uppercase; font-weight:500;}
-.buy-now-btn:hover{filter:brightness(1.1);}
+.buy-now-btn{flex:1; padding:15px; background:transparent; border:1.5px solid var(--maroon-light); color:var(--maroon-light); letter-spacing:2.5px; font-size:12px; text-transform:uppercase; font-weight:500; border-radius:4px;}
+.buy-now-btn:hover{background:var(--maroon-light); color:#141210;}
+.buy-now-btn:disabled, .add-cart-btn:disabled{opacity:.45; cursor:not-allowed;}
 
 .pp-tabs{display:flex; gap:24px; margin-top:26px; border-bottom:1px solid var(--line);}
-.pp-tabs button{background:none; color:var(--muted); font-size:13px; padding:0 0 10px; letter-spacing:.5px; border-bottom:2px solid transparent;}
+.pp-tabs button{background:none; color:var(--muted); font-size:13px; padding:0 0 10px; letter-spacing:.5px; border-bottom:2px solid transparent; transition:color .2s ease, border-color .2s ease;}
 .pp-tabs button.active{color:var(--cream); border-color:var(--maroon-light);}
 .pp-tab-panel{display:none; padding:16px 0; font-size:13px; color:var(--muted); line-height:1.8;}
 .pp-tab-panel.active{display:block;}
@@ -262,12 +336,17 @@ footer.site-footer p{max-width:340px; margin:0 auto 16px; line-height:1.7;}
 .pp-tab-panel li{padding-left:16px; position:relative; margin-bottom:8px;}
 .pp-tab-panel li::before{content:'—'; position:absolute; left:0; color:var(--maroon-light);}
 
-.review-toggle{margin-top:18px; font-size:12px; color:var(--gold); letter-spacing:1px; text-decoration:underline; background:none; display:block;}
+.reviews-head{display:flex; align-items:center; justify-content:space-between; margin-top:26px;}
+.rev-summary{display:flex; align-items:baseline; gap:8px;}
+.rev-summary-score{font-family:'Cormorant SC',serif; font-size:22px; color:var(--cream);}
+.rev-summary-stars{color:var(--gold); font-size:12px;}
+.rev-summary-count{color:var(--muted); font-size:11px;}
+.review-toggle{margin-top:14px; font-size:12px; color:var(--gold); letter-spacing:1px; text-decoration:underline; background:none; display:block;}
 .review-form{margin-top:12px; display:none; flex-direction:column; gap:8px;}
 .review-form.open{display:flex;}
 .review-form textarea{min-height:60px;}
 .review-list{margin-top:16px; font-size:12px; color:var(--muted);}
-.review-list .rev{border-top:1px solid var(--line); padding:8px 0;}
+.review-list .rev{border-top:1px solid var(--line); padding:10px 0;}
 
 .rec-title{font-size:14px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin:30px 0 14px;}
 
@@ -541,13 +620,6 @@ button:active, .icon-btn:active, .quick-add:active, .btn:active, .checkout-btn:a
 .card-wish{transition:color .2s ease, transform .2s ease, background .2s ease;}
 .card-wish:active{transform:scale(1.2);}
 
-/* ---------- ANNOUNCEMENT MARQUEE (ribbon) ---------- */
-.ship-strip{padding:8px 0; white-space:nowrap;}
-.marquee-track{display:inline-flex; align-items:center; animation:marquee 16s linear infinite;}
-.marquee-track span{padding:0 24px; display:inline-block;}
-@keyframes marquee{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
-.ship-strip:hover .marquee-track{animation-play-state:paused;}
-
 /* ---------- PRODUCT GALLERY (swipe) ---------- */
 .pp-main-img{position:relative; touch-action:pan-y;}
 .pp-main-img img{transition:opacity .25s ease;}
@@ -559,9 +631,6 @@ button:active, .icon-btn:active, .quick-add:active, .btn:active, .checkout-btn:a
 .gal-dots span.active{background:#fff; width:16px; border-radius:4px;}
 
 /* ---------- SHARE BUTTON ---------- */
-.share-btn{width:50px; border:1px solid var(--maroon-light); color:var(--maroon-light); font-size:16px; display:flex; align-items:center; justify-content:center;}
-.share-btn:hover{color:var(--maroon-light); border-color:var(--maroon-light);}
-.share-btn svg{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round;}
 
 /* ---------- REVIEW TOGGLE (no longer link-styled) ---------- */
 .review-toggle{margin-top:18px; padding:11px 18px; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--cream); background:transparent; border:1px solid var(--gold); border-radius:3px; display:inline-flex; align-items:center; gap:8px;}
@@ -786,7 +855,6 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       <div class="logo" id="headerLogo">ATLAS</div>
       <div class="header-side">
         <button class="icon-btn" onclick="toggleSearch()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
-        <button class="icon-btn" onclick="openAccount()" aria-label="My Account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.5 20c1.4-4 4.2-6 7.5-6s6.1 2 7.5 6"></path></svg></button>
         <button class="icon-btn" id="cartBtn"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1.2 11a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg><span class="badge" id="cartBadge">0</span></button>
       </div>
     </div>
@@ -798,32 +866,26 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
     </div>
   </header>
 
-  <section class="banner">
-    <div class="banner-bg" id="bannerBg"></div>
-    <div class="banner-glow"></div>
-    <div class="banner-content">
-      <p id="bannerSub" style="display:none;">Minimal streetwear for those who move differently.</p>
-      <a href="javascript:void(0)" onclick="scrollToShop()" class="cta cta-hero" data-i18n="shopNow">Shopping Now</a>
+  <div id="storeHomeTop">
+    <div class="slides-banner hidden" id="slidesBanner">
+      <div class="slides-track" id="slidesTrack"></div>
+      <div class="slides-dots" id="slidesDots"></div>
     </div>
-  </section>
 
-  <section class="slides-banner hidden" id="slidesBanner">
-    <div class="slides-track" id="slidesTrack"></div>
-    <div class="slides-dots" id="slidesDots"></div>
-  </section>
-
-  <div class="ship-strip" id="shipStrip"><div class="marquee-track" id="shipStripTrack"><span></span><span></span></div></div>
-
-  <div class="section-wrap" id="categories">
-    <h2 class="section-title" data-i18n="shopByCategory">Shop by Category</h2>
-    <p class="section-sub" data-i18n="findYourFit">Find your fit</p>
-    <div class="cat-grid" id="catGrid"></div>
+    <div class="section-wrap cat-circle-section" id="catCircleSection">
+      <div class="cat-circle-head">
+        <h2 class="cat-circle-title" data-i18n="shopByCategory">Shop by Category</h2>
+      </div>
+      <div class="cat-circle-wrap" id="catCircleWrap">
+        <div class="cat-circle-strip" id="catCircleStrip"></div>
+      </div>
+    </div>
   </div>
 
-  <div class="section-wrap">
-    <h2 class="section-title" data-i18n="bestSellers">Best Sellers</h2>
-    <p class="section-sub" data-i18n="mostLoved">Our most-loved styles</p>
-    <div class="grid" id="bestSellersGrid"></div>
+  <div class="section-wrap" id="brandsSection">
+    <h2 class="section-title" data-i18n="shopWithBrands">Shop with Brands</h2>
+    <p class="section-sub" data-i18n="pickYourBrand">Pick your favorite brand</p>
+    <div class="brand-grid" id="brandShowcaseGrid"></div>
   </div>
 
   <div class="section-wrap" id="shop">
@@ -849,7 +911,7 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
   </footer>
 
   <div class="tabbar">
-    <button class="active" onclick="scrollToShop()"><span class="ti">▦</span><span data-i18n="tabShop">Shop</span></button>
+    <button class="active" onclick="scrollToShop()"><span class="ti"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></span><span data-i18n="tabShop">Shop</span></button>
     <button onclick="openTrackOrder()"><span class="ti"><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3z"></path><path d="M14 10h4l3 3v3h-7z"></path><circle cx="7" cy="18" r="1.6"></circle><circle cx="17.5" cy="18" r="1.6"></circle></svg></span><span data-i18n="tabTrack">Track</span></button>
     <button class="cart-tab" onclick="openCart()"><span class="cart-fab"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1.2 11a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg><span class="badge" id="cartBadge2">0</span></span><span class="cart-tab-label" data-i18n="tabCart">Cart</span></button>
     <button onclick="openWishlist()"><span class="ti"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.35-9.5-8.5C.8 8 2.2 4.5 5.5 4c2-.3 3.7.7 4.5 2 .8-1.3 2.5-2.3 4.5-2 3.3.5 4.7 4 3 7.5C19 15.65 12 20 12 20Z"></path></svg><span class="badge hidden" id="wishBadge2">0</span></span><span data-i18n="tabWishlist">Wishlist</span></button>
@@ -872,7 +934,12 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
 <div class="overlay hidden" id="productOverlay">
   <div class="stage">
     <div class="product-panel">
-      <div class="pp-topbar"><button onclick="closeProductModal()">←</button><span style="font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" data-i18n="product">Product</span><span></span></div>
+      <div class="pp-topbar"><button onclick="closeProductModal()">←</button><span style="font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" data-i18n="product">Product</span>
+        <span class="pp-top-actions">
+          <button class="pp-icon-btn" id="ppWishBtn" onclick="if(currentProduct) toggleWishlist(currentProduct.id)" aria-label="Wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.35-9.5-8.5C.8 8 2.2 4.5 5.5 4c2-.3 3.7.7 4.5 2 .8-1.3 2.5-2.3 4.5-2 3.3.5 4.7 4 3 7.5C19 15.65 12 20 12 20Z"></path></svg></button>
+          <button class="pp-icon-btn" onclick="if(currentProduct) shareProduct(currentProduct.id)" aria-label="Share"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.5" x2="15.4" y2="6.5"></line><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line></svg></button>
+        </span>
+      </div>
       <div id="ppContent"></div>
     </div>
   </div>
@@ -953,6 +1020,20 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       <div class="pp-topbar"><button onclick="closeCategoryPage()">←</button><span id="categoryPageTitle" style="font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;">Category</span><span></span></div>
       <div class="section-wrap" style="padding-top:6px;">
         <div class="grid" id="categoryGrid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Brand page -->
+<div class="overlay hidden" id="brandOverlay">
+  <div class="stage">
+    <div class="product-panel">
+      <div class="pp-topbar"><button onclick="closeBrandPage()">←</button><span style="font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;">Brand</span><span></span></div>
+      <div class="section-wrap" style="padding-top:6px; text-align:center;">
+        <img id="brandPageLogo" src="" style="width:76px; height:76px; border-radius:50%; object-fit:cover; margin:0 auto 12px; border:1px solid var(--line);">
+        <h2 class="serif" id="brandPageName" style="font-size:24px; letter-spacing:2px; margin-bottom:26px;"></h2>
+        <div class="grid" id="brandGrid"></div>
       </div>
     </div>
   </div>
@@ -1089,28 +1170,33 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
   </div>
   <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop" onclick="toggleAdminSidebar(false)"></div>
   <div class="admin-sidebar" id="adminSidebar">
-    <div class="admin-logo">ATLAS<span>Admin Panel</span></div>
+    <div class="admin-logo">ATLAS<span>Admin Panel</span><span class="brand-admin-badge hidden" id="brandAdminBadge"></span></div>
     <div class="admin-nav" id="adminNav">
       <button data-sec="products" class="active">📦 Products</button>
-      <button data-sec="banner">🖼 Banner</button>
-      <button data-sec="orders">🛒 Orders</button>
-      <button data-sec="returns">↩ Returns</button>
-      <button data-sec="returnrequests">📩 Return Requests <span class="nbadge hidden" id="returnReqBadge">0</span></button>
-      <button data-sec="customers">👤 Customers</button>
-      <button data-sec="coupons">🏷 Coupons</button>
-      <button data-sec="shipping">🚚 Shipping</button>
-      <button data-sec="sizeguides">📏 Size Guides</button>
-      <button data-sec="categoryimages">🖼 Category Images</button>
-      <button data-sec="intro">🎬 Intro / Home Screen</button>
-      <button data-sec="academy">🏋 Academy &amp; Camp</button>
-      <button data-sec="private">📍 Private (Coaches &amp; Goalkeepers)</button>
-      <button data-sec="bookings">📅 Bookings</button>
+      <button data-sec="brandorders" class="hidden" id="navBrandOrders">📦 My Orders</button>
+      <button data-sec="brandreturns" class="hidden" id="navBrandReturns">📩 My Return Requests <span class="nbadge hidden" id="brandReturnReqBadge">0</span></button>
+      <button data-sec="brandreviews" class="hidden" id="navBrandReviews">⭐ My Reviews</button>
+      <button data-sec="orders" class="role-super">🛒 Orders</button>
+      <button data-sec="returns" class="role-super">↩ Returns</button>
+      <button data-sec="returnrequests" class="role-super">📩 Return Requests <span class="nbadge hidden" id="returnReqBadge">0</span></button>
+      <button data-sec="customers" class="role-super">👤 Customers</button>
+      <button data-sec="coupons" class="role-super">🏷 Coupons</button>
+      <button data-sec="shipping" class="role-super">🚚 Shipping</button>
+      <button data-sec="sizeguides" class="role-super">📏 Size Guides</button>
+      <button data-sec="categoryimages" class="role-super">🖼 Category Images</button>
+      <button data-sec="circleitems" class="role-super">⚪ Category Circles</button>
+      <button data-sec="intro" class="role-super">🎬 Intro / Home Screen</button>
+      <button data-sec="academy" class="role-super">🏋 Academy &amp; Camp</button>
+      <button data-sec="private" class="role-super">📍 Private (Coaches &amp; Goalkeepers)</button>
+      <button data-sec="bookings" class="role-super">📅 Bookings</button>
+      <button data-sec="brands" class="role-super">🏷️ Brands</button>
+      <button data-sec="banner" class="role-super">🖼️ Banner Slides</button>
       <button data-sec="statistics">📈 Statistics</button>
-      <button data-sec="notifications">🔔 Notifications <span class="nbadge hidden" id="notifBadge">0</span></button>
-      <button data-sec="reviews">⭐ Reviews <span class="nbadge hidden" id="reviewBadge">0</span></button>
-      <button data-sec="wablast">💬 WhatsApp Blast</button>
-      <button data-sec="settings">⚙️ Settings</button>
-      <button data-sec="datamanager">🗑 Data Manager</button>
+      <button data-sec="notifications" class="role-super">🔔 Notifications <span class="nbadge hidden" id="notifBadge">0</span></button>
+      <button data-sec="reviews" class="role-super">⭐ Reviews <span class="nbadge hidden" id="reviewBadge">0</span></button>
+      <button data-sec="wablast" class="role-super">💬 WhatsApp Blast</button>
+      <button data-sec="settings" class="role-super">⚙️ Settings</button>
+      <button data-sec="datamanager" class="role-super">🗑 Data Manager</button>
     </div>
     <div class="admin-exit"><button onclick="exitAdmin()">← Back to store</button></div>
   </div>
@@ -1129,7 +1215,11 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       <div class="form-panel" id="productFormPanel">
         <div class="form-grid">
           <div><label>Name</label><input id="pfName"></div>
-          <div><label>Category</label><input id="pfCategory" placeholder="e.g. Tees, Denim"></div>
+          <div><label>Category</label>
+            <select id="pfCategory" onchange="onPfCategoryChange()"></select>
+            <input id="pfCategoryNew" placeholder="Type the new category name" class="hidden" style="margin-top:6px;">
+          </div>
+          <div class="role-super" id="pfBrandWrap"><label>Brand</label><select id="pfBrand"><option value="">— No brand / house product —</option></select></div>
           <div><label>Price ($)</label><input id="pfPrice" type="number" step="0.01"></div>
           <div><label>Discount Price ($)</label><input id="pfDiscount" type="number" step="0.01"></div>
           <div><label>Offer Ends (optional)</label><input id="pfSaleEnd" type="datetime-local"></div>
@@ -1171,28 +1261,6 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       </div>
     </section>
 
-    <section class="admin-section" id="sec-banner">
-      <div class="admin-h1">Banner</div>
-      <div class="admin-sub">Update or remove the homepage banner image</div>
-      <img id="bannerAdminPreview" class="banner-admin-preview">
-      <div class="file-drop" onclick="document.getElementById('bannerFile').click()" style="max-width:520px;">Click to upload a new banner image</div>
-      <input type="file" id="bannerFile" accept="image/*" class="hidden">
-      <div class="form-grid" style="max-width:520px; margin-top:18px;">
-        <div class="full"><label>Subtitle</label><input id="bnSub"></div>
-      </div>
-      <div class="form-actions">
-        <button class="btn" onclick="saveBannerText()">Save Text</button>
-        <button class="btn secondary" onclick="adjustBannerImage()">Adjust Image</button>
-        <button class="btn danger" onclick="removeBannerImage()">Remove Image</button>
-      </div>
-
-      <div class="admin-h1" style="margin-top:36px; font-size:20px;">Moving Banner</div>
-      <div class="admin-sub">Add multiple images — they'll auto-rotate on the storefront</div>
-      <div class="file-drop" onclick="document.getElementById('slidesFile').click()" style="max-width:520px;">Click to add banner image(s)</div>
-      <input type="file" id="slidesFile" accept="image/*" multiple class="hidden">
-      <div id="slidesAdminList" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; max-width:520px;"></div>
-    </section>
-
     <section class="admin-section" id="sec-orders">
       <div class="admin-h1">Orders</div>
       <div class="admin-sub">Manage customer orders and fulfillment status</div>
@@ -1223,6 +1291,39 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       <table>
         <thead><tr><th>Order #</th><th>Customer</th><th>Phone</th><th>Governorate</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead>
         <tbody id="ordersTable"></tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="admin-section" id="sec-brandorders">
+      <div class="admin-h1">My Orders</div>
+      <div class="admin-sub">Orders that include at least one of your products. Only your own items and their status are shown — statuses are managed by the store admin.</div>
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Order #</th><th>Customer</th><th>Phone</th><th>Governorate</th><th>Date</th><th>My Items</th><th>My Revenue</th><th>Status</th></tr></thead>
+        <tbody id="brandOrdersTable"></tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="admin-section" id="sec-brandreturns">
+      <div class="admin-h1">My Return Requests</div>
+      <div class="admin-sub">Return/exchange requests for orders that include at least one of your products. Read-only — the store admin approves or rejects these, since a returned order can mix items from several brands.</div>
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Order #</th><th>Customer</th><th>Phone</th><th>Reason</th><th>Date</th><th>Status</th></tr></thead>
+        <tbody id="brandReturnRequestsTable"></tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="admin-section" id="sec-brandreviews">
+      <div class="admin-h1">My Reviews</div>
+      <div class="admin-sub">Customer reviews left on your products.</div>
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Product</th><th>Name</th><th>Rating</th><th>Review</th><th>Date</th><th>Status</th></tr></thead>
+        <tbody id="brandReviewsTable"></tbody>
       </table>
       </div>
     </section>
@@ -1310,6 +1411,42 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
     <section class="admin-section" id="sec-statistics">
       <div class="admin-h1">Statistics</div>
       <div class="admin-sub">Deep insight into store performance</div>
+      <div id="brandStatsView">
+        <div class="stat-grid" id="brandStatsGrid"></div>
+        <div style="margin-top:24px;">
+          <h4 style="font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">My Products — Sold &amp; Revenue</h4>
+          <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Product</th><th>Category</th><th>Units Sold</th><th>Revenue</th></tr></thead>
+            <tbody id="brandProductsStatsTable"></tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Super-admin only: overview across every brand — orders, revenue, reviews sentiment,
+           each respecting the date-range filter below. Replaces the empty box brand admins see. -->
+      <div id="superBrandsOverview">
+        <div class="stat-grid" id="superBrandsSummaryGrid"></div>
+        <div style="margin-top:24px;">
+          <h4 style="font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Brands — Orders, Sales &amp; Reviews</h4>
+          <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Brand</th><th>Products</th><th>Orders</th><th>Units Sold</th><th>Revenue</th><th>Rating</th><th>Reviews Say</th><th></th></tr></thead>
+            <tbody id="superBrandsStatsTable"></tbody>
+          </table>
+          </div>
+        </div>
+        <div id="superBrandOrdersDetail" class="hidden" style="margin-top:24px;">
+          <h4 id="superBrandOrdersDetailTitle" style="font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px;"></h4>
+          <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Order #</th><th>Customer</th><th>Date</th><th>Items (this brand)</th><th>Qty</th><th>Total (this brand)</th><th>Status</th></tr></thead>
+            <tbody id="superBrandOrdersDetailTable"></tbody>
+          </table>
+          </div>
+        </div>
+      </div>
       <div class="admin-toolbar" style="flex-wrap:wrap; gap:10px;">
         <div>
           <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">From</label>
@@ -1406,7 +1543,6 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
           <div><label>Facebook URL</label><input id="stFacebook" placeholder="https://facebook.com/..."></div>
           <div><label>TikTok URL</label><input id="stTiktok" placeholder="https://tiktok.com/..."></div>
           <div><label>Snapchat URL</label><input id="stSnapchat" placeholder="https://snapchat.com/add/..."></div>
-          <div class="full"><label>Announcement Ribbon Text (moving strip below banner — leave empty to hide)</label><input id="stRibbon" placeholder="FREE SHIPPING FOR LIMITED TIME · BUY 2 GET 10% OFF"></div>
           <div>
             <label>Store Logo</label>
             <input type="file" id="stLogoFile" accept="image/*" class="hidden">
@@ -1464,6 +1600,8 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
         <div class="dm-row"><span>Governorates / Shipping</span><button class="btn small danger" onclick="removeDataSection('shipping')">Delete</button></div>
         <div class="dm-row"><span>Coupons</span><button class="btn small danger" onclick="removeDataSection('coupons')">Delete</button></div>
         <div class="dm-row"><span>Category Images</span><button class="btn small danger" onclick="removeDataSection('categoryimages')">Delete</button></div>
+        <div class="dm-row"><span>Category Circles</span><button class="btn small danger" onclick="removeDataSection('circleitems')">Delete</button></div>
+        <div class="dm-row"><span>Categories</span><button class="btn small danger" onclick="removeDataSection('categories')">Delete</button></div>
         <div class="dm-row"><span>Cart (this device)</span><button class="btn small danger" onclick="removeDataSection('cart')">Delete</button></div>
       </div>
       <div class="danger-zone">
@@ -1490,9 +1628,34 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
 
     <section class="admin-section" id="sec-categoryimages">
       <div class="admin-h1">Category Images</div>
-      <div class="admin-sub">Upload a cover image per category — it's used on the "Shop by Category" tiles on the homepage instead of a random product photo</div>
+      <div class="admin-sub">New categories added from the product form wait here for a cover image before they appear on the homepage. Also manage cover images for already-live categories.</div>
       <div id="categoryImagesList"></div>
       <input type="file" id="categoryImageFile" accept="image/*" class="hidden">
+    </section>
+
+    <section class="admin-section" id="sec-circleitems">
+      <div class="admin-h1">Category Circles</div>
+      <div class="admin-sub">The round row right under the header. Fully separate from the square "Shop by Category" tiles above — its own name, its own image, and an optional tap-through to a category. Add, edit, delete, and reorder as you like without touching the actual product categories.</div>
+      <div class="admin-toolbar"><button class="btn" onclick="openCircleItemForm()">+ Add Circle</button></div>
+      <div class="form-panel" id="circleItemFormPanel">
+        <div class="form-grid">
+          <div><label>Circle Name</label><input id="ciName" placeholder="e.g. New In, Sale, Sneakers"></div>
+          <div><label>Links to Category (optional)</label>
+            <select id="ciLink"><option value="">— No link (decorative only) —</option></select>
+          </div>
+          <div class="full"><label>Image</label>
+            <div class="file-drop" onclick="document.getElementById('circleItemFile').click()" style="max-width:220px;">Click to upload image</div>
+            <input type="file" id="circleItemFile" accept="image/*" class="hidden" onchange="onCircleItemFileChange(event)">
+            <img id="ciImgPreview" class="hidden" style="width:70px; height:70px; object-fit:cover; border-radius:50%; margin-top:8px;">
+            <button type="button" class="btn small secondary hidden" id="ciImgAdjustBtn" style="margin-top:6px;" onclick="adjustCircleItemImage()">Adjust</button>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" onclick="saveCircleItem()">Save Circle</button>
+          <button class="btn secondary" onclick="closeCircleItemForm()">Cancel</button>
+        </div>
+      </div>
+      <div id="circleItemsList"></div>
     </section>
 
     <section class="admin-section" id="sec-intro">
@@ -1688,6 +1851,45 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       </div>
     </section>
 
+    <section class="admin-section" id="sec-brands">
+      <div class="admin-h1">Brands</div>
+      <div class="admin-sub">Add a brand/vendor account. Give the brand owner the Brand Key + Password — they log in from the same admin login screen, but only see and manage their own products, orders touching their products, and their own statistics.</div>
+      <div class="admin-toolbar"><button class="btn" onclick="openBrandForm()">+ Add Brand</button></div>
+      <div class="form-panel" id="brandFormPanel">
+        <div class="form-grid">
+          <div><label>Brand Name</label><input id="bfName" placeholder="e.g. Nike, Local Vendor"></div>
+          <div><label>Brand Key (used to log in)</label><input id="bfKey" placeholder="e.g. nike2024"></div>
+          <div><label>Password</label><input id="bfPassword" placeholder="Password for this brand's admin"></div>
+          <div class="full"><label>Logo</label>
+            <div class="file-drop" onclick="document.getElementById('bfLogoFile').click()" style="max-width:220px;">Click to upload logo</div>
+            <input type="file" id="bfLogoFile" accept="image/*" class="hidden" onchange="onBrandLogoFileChange(event)">
+            <img id="bfLogoPreview" class="hidden" style="width:70px; height:70px; object-fit:cover; border-radius:50%; margin-top:8px;">
+            <button type="button" class="btn small secondary hidden" id="bfLogoAdjustBtn" style="margin-top:6px;" onclick="adjustBrandLogo()">Adjust</button>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" onclick="saveBrand()">Save Brand</button>
+          <button class="btn secondary" onclick="closeBrandForm()">Cancel</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Logo</th><th>Name</th><th>Brand Key</th><th>Products</th><th>Views</th><th>Units Sold</th><th>Revenue</th><th></th></tr></thead>
+        <tbody id="brandsTable"></tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="admin-section" id="sec-banner">
+      <div class="admin-h1">Banner Slides</div>
+      <div class="admin-sub">Upload the images that rotate in the animated banner above "Shop by Category" on the home page. Add as many as you like — they auto-rotate every 4 seconds, and shoppers can tap the dots to jump between them.</div>
+      <div class="admin-toolbar">
+        <button class="btn" onclick="document.getElementById('slidesFile').click()">+ Add Slide(s)</button>
+        <input type="file" id="slidesFile" accept="image/*" multiple class="hidden" onchange="onSlidesFileChange(event)">
+      </div>
+      <div id="slidesAdminList" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;"></div>
+    </section>
+
     <section class="admin-section" id="sec-wablast">
       <div class="admin-h1">WhatsApp Blast</div>
       <div class="admin-sub">Write one message and send it to your saved customers on WhatsApp. Each send opens a WhatsApp chat pre-filled with your message — WhatsApp doesn't allow a website to auto-send in bulk, so you tap "Send" once per customer (or use "Send Next" to move through the list quickly).</div>
@@ -1743,6 +1945,7 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
   <div class="admin-login-card">
     <h3>ADMIN LOGIN</h3>
     <div class="admin-login-err" id="admLoginErr"></div>
+    <input type="text" id="admLoginBrandKey" placeholder="Brand Key (leave empty for main admin)" maxlength="30" style="margin-bottom:8px;" onkeydown="if(event.key==='Enter') document.getElementById('admLoginPass').focus()">
     <input type="password" id="admLoginPass" placeholder="Password" maxlength="20" onkeydown="if(event.key==='Enter') submitAdminLogin()">
     <button class="btn" onclick="submitAdminLogin()">Enter</button>
     <button class="btn secondary" style="width:100%; margin-top:8px;" onclick="cancelAdminLogin()">Cancel</button>
@@ -1907,7 +2110,7 @@ function attachRealtimeListeners(){
   fbDb.collection('store').doc('atlas:products').onSnapshot(snap=>{
     if(!snap.exists) return;
     PRODUCTS = snap.data().value || [];
-    renderMenu(); renderCategoryTiles(); renderProducts(); renderBestSellers();
+    renderMenu(); renderCategoryTiles(); renderProducts();
     if(currentProduct){
       const p = PRODUCTS.find(x=>x.id===currentProduct.id);
       if(p){
@@ -1962,6 +2165,17 @@ function attachRealtimeListeners(){
   });
   fbDb.collection('store').doc('atlas:banner').onSnapshot(snap=>{ if(snap.exists){ BANNER = snap.data().value; renderBanner(); } });
   fbDb.collection('store').doc('atlas:bannerslides').onSnapshot(snap=>{ if(snap.exists){ BANNER_SLIDES = snap.data().value || []; renderSlidesBanner(); if(typeof renderSlidesAdmin==='function' && document.getElementById('sec-banner')) renderSlidesAdmin(); } });
+  fbDb.collection('store').doc('atlas:categories').onSnapshot(snap=>{ if(snap.exists){ CATEGORIES = snap.data().value || CATEGORIES; renderCategoryTiles(); if(typeof renderCategoryImagesAdmin==='function' && document.getElementById('sec-categoryimages')) renderCategoryImagesAdmin(); } });
+  fbDb.collection('store').doc('atlas:circleitems').onSnapshot(snap=>{ if(snap.exists){ CIRCLE_ITEMS = snap.data().value || CIRCLE_ITEMS; renderCircleItems(); if(typeof renderCircleItemsAdmin==='function' && document.getElementById('sec-circleitems')) renderCircleItemsAdmin(); } });
+  fbDb.collection('store').doc('atlas:brands').onSnapshot(snap=>{ if(snap.exists){ BRANDS = snap.data().value || BRANDS; renderBrandShowcase(); if(typeof renderBrandsAdmin==='function' && document.getElementById('sec-brands')) renderBrandsAdmin(); } });
+  fbDb.collection('store').doc('atlas:pendingcategories').onSnapshot(snap=>{
+    if(!snap.exists) return;
+    const incoming = snap.data().value || [];
+    const isNewPending = incoming.length > PENDING_CATEGORIES.length;
+    PENDING_CATEGORIES = incoming;
+    if(typeof renderCategoryImagesAdmin==='function' && document.getElementById('sec-categoryimages')) renderCategoryImagesAdmin();
+    if(isNewPending && ADMIN_LOGGED_IN && !isBrandAdmin()) notifyNewActivity(LANG==='ar' ? 'في كاتيجوري جديدة محتاجة صورة عشان تظهر' : 'A new category needs a cover image before it can go live');
+  });
   fbDb.collection('store').doc('atlas:stats').onSnapshot(snap=>{ if(snap.exists){ STATS = snap.data().value || STATS; } });
   fbDb.collection('store').doc('atlas:settings').onSnapshot(snap=>{ if(snap.exists){ SETTINGS = snap.data().value; applySettingsToStorefront(); } });
   fbDb.collection('store').doc('atlas:sizeguides').onSnapshot(snap=>{
@@ -2091,6 +2305,17 @@ if(fbMessaging){
 
 /* ================= STATE ================= */
 let PRODUCTS=[], ORDERS=[], CUSTOMERS=[], COUPONS=[], STATS=null, NOTIFS=[], BANNER=null, CART=[], SHIPPING={}, WISHLIST=[], RETURNS=[], RETURN_REQUESTS=[], BANNER_SLIDES=[];
+// CATEGORIES: the approved, curated list of category names shown in "Shop by Category" — starts
+// with just these 4 so the homepage isn't cluttered until an admin approves more.
+// PENDING_CATEGORIES: new category names typed on the product form that are awaiting an admin
+// to set a cover image for them — until approved they stay out of CATEGORIES and off the homepage.
+let CATEGORIES=['تيشرت','شورت','جزم','كورة'], PENDING_CATEGORIES=[];
+// CIRCLE_ITEMS: the round "Shop by Category" hero row right under the header. Fully independent
+// from CATEGORIES/CATEGORY_IMAGES below — its own name + image per circle, managed separately from
+// the admin's "Category Circles" section, so it doesn't have to mirror the square category tiles.
+// [{id, name, image, link}] — link is an optional CATEGORIES name to open when tapped.
+let CIRCLE_ITEMS=[];
+let editingCircleItemId=null;
 let ACADEMY=[]; // [{id, name, type:'academy'|'camp', photo, bio, session, location, whatsapp}] — trainers/coaches managed from the admin Academy section
 let PRIVATE_TRAINERS=[]; // [{id, name, type:'coach'|'goalkeeper', photo, sessions, years, bio, session, location, whatsapp}] — trainers managed from the admin Private section. No price/portal — contact goes straight to WhatsApp.
 let INTRO_SLIDES=[]; // [{id, image, title, text}] — the first-run onboarding screens shown before the Store/Academy/Camp/Private menu, editable from Admin > Intro / Home Screen
@@ -2099,15 +2324,23 @@ let introIdx=0;
 let TRAINER_BOOKINGS=[]; // [{id, trainerId, trainerKind:'academy'|'camp'|'private'|'fitness', trainerName, name, phone, note, price, createdAt}] — session requests visitors send to a trainer
 let editingTrainerId=null, editingPrivateTrainerId=null, editingIntroSlideId=null, currentAcademyType='academy', currentPrivateType='coach';
 let SETTINGS=null, ADMIN_LOGGED_IN=false;
+let BRANDS=[]; // [{id, name, searchKey, password, logo, createdAt, views}]
+let ACTIVE_BRAND_ID=null; // set when logged in as a brand admin (not the super admin)
+function isBrandAdmin(){ return !!ACTIVE_BRAND_ID; }
+function myBrand(){ return BRANDS.find(b=>b.id===ACTIVE_BRAND_ID) || null; }
 let SIZEGUIDES={}; // { [categoryName]: imageDataUrl } — set per-category from the admin panel
 let CATEGORY_IMAGES={}; // { [categoryName]: imageDataUrl } — set per-category from the admin panel, shown on the "Shop by Category" tiles
+// One-time seed so the hero circle row isn't empty the very first time this runs — after that it's
+// fully admin-managed and no longer tied to CATEGORIES.
+function defaultCircleItems(){
+  return (CATEGORIES||[]).map(c=>({ id: uid('circ'), name: c, image: CATEGORY_IMAGES[c] || null, link: c }));
+}
 let MY_PROFILE=null; // {name, phone} — this device/browser's identified customer, so returning visitors see their own account page
 let MY_LAST_VIEWED=null; // productId of the last product this device looked at
 let appliedPointsRedeem=null; // {points, percent} — the loyalty-points tier currently applied at checkout (mutually exclusive with a coupon)
 function defaultSettings(){
   return { name:'ATLAS', currency:'EGP', whatsapp:'', address:'Alexandria, Egypt', logo:null,
     social:{instagram:'',facebook:'',tiktok:'',snapchat:''}, active:true, password:'123', lastLogin:null,
-    ribbon:'FREE SHIPPING FOR LIMITED TIME · BUY 2 GET 10% OFF',
     loyalty:{ pointsPerOrder:10, tiers:[{points:100,percent:5},{points:250,percent:10},{points:500,percent:20}] } };
 }
 function defaultLoyalty(){ return { pointsPerOrder:10, tiers:[{points:100,percent:5},{points:250,percent:10},{points:500,percent:20}] }; }
@@ -2226,8 +2459,8 @@ let LANG = cacheGet('atlas:lang', 'en');
 const I18N = {
   en:{
     searchPlaceholder:'Search products...', shopNow:'Shopping Now',
-    shopByCategory:'Shop by Category', findYourFit:'Find your fit',
-    bestSellers:'Best Sellers', mostLoved:'Our most-loved styles',
+    shopByCategory:'Shop by Category',
+    shopWithBrands:'Shop with Brands', pickYourBrand:'Pick your favorite brand',
     allProducts:'All Products', everyPiece:'Every piece, one energy',
     footerBlurb:'We design for those who value simplicity and individuality. Minimal silhouettes, considered fabrics, made to move with you.',
     rightsReserved:'All rights reserved.',
@@ -2267,8 +2500,8 @@ const I18N = {
   },
   ar:{
     searchPlaceholder:'ابحث عن المنتجات...', shopNow:'تسوقي الآن',
-    shopByCategory:'تسوقي حسب الفئة', findYourFit:'اختاري ما يناسبك',
-    bestSellers:'الأكثر مبيعاً', mostLoved:'المنتجات الأكثر تفضيلاً',
+    shopByCategory:'تسوقي حسب الفئة',
+    shopWithBrands:'تسوق مع البراندات', pickYourBrand:'اختار البراند اللي يعجبك',
     allProducts:'كل المنتجات', everyPiece:'كل قطعة بطاقتها الخاصة',
     footerBlurb:'نصمم لمن يقدّر البساطة والتفرد. تصاميم بسيطة وخامات مدروسة تتحرك معك.',
     rightsReserved:'جميع الحقوق محفوظة.',
@@ -2317,7 +2550,6 @@ function applyI18n(){
   // Re-render dynamic storefront sections so their JS-generated text picks up the new language too
   if(typeof renderMenu==='function') renderMenu();
   if(typeof renderProducts==='function') renderProducts();
-  if(typeof renderBestSellers==='function') renderBestSellers();
   if(typeof renderCategoryTiles==='function') renderCategoryTiles();
   if(typeof renderCart==='function') renderCart();
   if(typeof renderWishlist==='function' && !document.getElementById('wishlistOverlay').classList.contains('hidden')) renderWishlist();
@@ -2353,6 +2585,10 @@ async function init(){
   RETURN_REQUESTS = cacheGet('atlas:returnrequests', []);
   BANNER_SLIDES = cacheGet('atlas:bannerslides', []);
   CATEGORY_IMAGES = cacheGet('atlas:categoryimages', {});
+  CATEGORIES = cacheGet('atlas:categories', ['تيشرت','شورت','جزم','كورة']);
+  PENDING_CATEGORIES = cacheGet('atlas:pendingcategories', []);
+  CIRCLE_ITEMS = cacheGet('atlas:circleitems', null) || defaultCircleItems();
+  BRANDS = cacheGet('atlas:brands', []);
   MY_PROFILE = cacheGet('atlas:myprofile', null);
   MY_LAST_VIEWED = cacheGet('atlas:lastviewed', null);
   ACADEMY = cacheGet('atlas:academy', []);
@@ -2365,8 +2601,7 @@ async function init(){
   renderBanner();
   renderSlidesBanner();
   renderCategoryTiles();
-  renderProducts();
-  renderBestSellers();
+  renderCircleItems();
   renderCart();
   renderWishlistBadge();
   applySettingsToStorefront();
@@ -2376,8 +2611,6 @@ async function init(){
 
   document.getElementById('searchInput').addEventListener('input', onSearchInput);
   document.getElementById('cartBtn').addEventListener('click', openCart);
-  document.getElementById('bannerFile').addEventListener('change', onBannerFileChange);
-  document.getElementById('slidesFile').addEventListener('change', onSlidesFileChange);
   document.getElementById('pfImageFile').addEventListener('change', onProductFileChange);
   document.getElementById('sizeGuideFile').addEventListener('change', onSizeGuideFileChange);
   document.getElementById('categoryImageFile').addEventListener('change', onCategoryImageFileChange);
@@ -2401,7 +2634,7 @@ async function init(){
 
 async function syncFromFirestore(){
   if(!fbReady){ return; }
-  const [products, orders, customers, coupons, notifs, banner, bannerslides, stats, cart, wishlist, shipping, settings, sizeguides, returns, returnrequests, categoryimages, myprofile, lastviewed, academy, privatetrainers, trainerbookings, introslides, hometiles] = await Promise.all([
+  const [products, orders, customers, coupons, notifs, banner, bannerslides, stats, cart, wishlist, shipping, settings, sizeguides, returns, returnrequests, categoryimages, categories, pendingcategories, myprofile, lastviewed, academy, privatetrainers, trainerbookings, introslides, hometiles] = await Promise.all([
     getData('atlas:products', null, true),
     getData('atlas:orders', [], true),
     getData('atlas:customers', [], true),
@@ -2418,6 +2651,8 @@ async function syncFromFirestore(){
     getData('atlas:returns', [], true),
     getData('atlas:returnrequests', [], true),
     getData('atlas:categoryimages', {}, true),
+    getData('atlas:categories', null, true),
+    getData('atlas:pendingcategories', [], true),
     getData('atlas:myprofile', null, false),
     getData('atlas:lastviewed', null, false),
     getData('atlas:academy', [], true),
@@ -2442,6 +2677,11 @@ async function syncFromFirestore(){
   RETURNS = returns;
   RETURN_REQUESTS = returnrequests;
   CATEGORY_IMAGES = categoryimages || {};
+  const prevCategoriesJSON = JSON.stringify(CATEGORIES);
+  const prevPendingCategoriesJSON = JSON.stringify(PENDING_CATEGORIES);
+  CATEGORIES = categories || ['تيشرت','شورت','جزم','كورة'];
+  if(!categories){ await setData('atlas:categories', CATEGORIES, true); }
+  PENDING_CATEGORIES = pendingcategories || [];
   MY_PROFILE = myprofile || MY_PROFILE;
   MY_LAST_VIEWED = lastviewed || MY_LAST_VIEWED;
   const prevAcademyJSON = JSON.stringify(ACADEMY);
@@ -2485,11 +2725,18 @@ async function syncFromFirestore(){
   if(typeof renderAccountPage==='function' && !document.getElementById('accountOverlay').classList.contains('hidden')) renderAccountPage();
 
   if(JSON.stringify(PRODUCTS) !== prevProductsJSON){
-    renderMenu(); renderCategoryTiles(); renderProducts(); renderBestSellers();
+    renderMenu(); renderCategoryTiles(); renderProducts();
     if(typeof renderProductsTable === 'function') renderProductsTable();
   }
   if(JSON.stringify(BANNER) !== prevBannerJSON) renderBanner();
   if(JSON.stringify(BANNER_SLIDES) !== prevSlidesJSON) renderSlidesBanner();
+  if(JSON.stringify(CATEGORIES) !== prevCategoriesJSON){
+    renderCategoryTiles();
+    if(document.getElementById('sec-categoryimages')) renderCategoryImagesAdmin();
+  }
+  if(JSON.stringify(PENDING_CATEGORIES) !== prevPendingCategoriesJSON){
+    if(document.getElementById('sec-categoryimages')) renderCategoryImagesAdmin();
+  }
   if(JSON.stringify(SETTINGS) !== prevSettingsJSON) applySettingsToStorefront();
   renderCart();
   renderWishlistBadge();
@@ -2513,6 +2760,7 @@ function navigateTo(view, extra){
   let hash = '#!' + view;
   if(extra && extra.id) hash += '/' + encodeURIComponent(extra.id);
   else if(extra && extra.cat) hash += '/' + encodeURIComponent(extra.cat);
+  else if(extra && extra.brandId) hash += '/' + encodeURIComponent(extra.brandId);
   history.pushState(state, '', hash);
   applyRoute(state);
 }
@@ -2537,7 +2785,7 @@ function syncBodyScrollLock(view){
   }
 }
 function hideAllOverlays(){
-  ['menuOverlay','productOverlay','categoryOverlay','cartOverlay','wishlistOverlay','accountOverlay','returnOverlay','checkoutOverlay','trackOrderOverlay','orderConfirmOverlay','programChooseOverlay','academyOverlay','academyDetailOverlay','privateOverlay','privateDetailOverlay','trainerBookingOverlay'].forEach(id=>{
+  ['menuOverlay','productOverlay','categoryOverlay','brandOverlay','cartOverlay','wishlistOverlay','accountOverlay','returnOverlay','checkoutOverlay','trackOrderOverlay','orderConfirmOverlay','programChooseOverlay','academyOverlay','academyDetailOverlay','privateOverlay','privateDetailOverlay','trainerBookingOverlay'].forEach(id=>{
     const el = document.getElementById(id); if(el) el.classList.add('hidden');
   });
   const sd = document.getElementById('searchDrop'); if(sd) sd.classList.remove('open');
@@ -2586,6 +2834,20 @@ function applyRoute(state){
       document.getElementById('categoryOverlay').classList.remove('hidden');
       const panel = document.querySelector('#categoryOverlay .product-panel');
       if(panel) panel.scrollTop = 0;
+      break;
+    }
+    case 'brand': {
+      const b = BRANDS.find(x=>x.id===state.brandId);
+      if(b){
+        b.views = (b.views||0) + 1; persistBrands();
+        document.getElementById('brandPageLogo').src = b.logo || 'https://picsum.photos/seed/'+b.id+'/200/200';
+        document.getElementById('brandPageName').textContent = b.name;
+        const list = visibleProducts().filter(p=>p.brandId===b.id);
+        document.getElementById('brandGrid').innerHTML = list.length ? list.map(productCardHTML).join('') : '<div class="empty-note" style="grid-column:1/-1;">No products from this brand yet.</div>';
+        document.getElementById('brandOverlay').classList.remove('hidden');
+        const panel = document.querySelector('#brandOverlay .product-panel');
+        if(panel) panel.scrollTop = 0;
+      } else { history.back(); }
       break;
     }
     case 'cart':
@@ -2677,12 +2939,13 @@ function parseHashToState(hash){
   if(!hash || hash.length < 3) return fallback;
   const parts = hash.replace(/^#!/, '').split('/');
   const view = parts[0];
-  if(!['product','category'].includes(view)) return fallback; // only these carry a shareable id
+  if(!['product','category','brand'].includes(view)) return fallback; // only these carry a shareable id
   const state = {__atlas:true, view};
   if(parts[1]){
     const val = decodeURIComponent(parts[1]);
     if(view === 'product') state.id = val;
     if(view === 'category') state.cat = val;
+    if(view === 'brand') state.brandId = val;
   }
   return state;
 }
@@ -2744,9 +3007,11 @@ function toggleSearch(){
 
 function renderBanner(){
   const bg = document.getElementById('bannerBg');
+  if(!bg) return; // static hero banner was replaced by the moving slides banner
   if(BANNER.image){ bg.classList.add('has-image'); bg.style.backgroundImage = `url('${BANNER.image}')`; }
   else { bg.classList.remove('has-image'); bg.style.backgroundImage = ''; }
-  document.getElementById('bannerSub').textContent = BANNER.sub || '';
+  const sub = document.getElementById('bannerSub');
+  if(sub) sub.textContent = BANNER.sub || '';
 }
 
 /* ---------- AUTO-MOVING SLIDES BANNER ---------- */
@@ -2762,7 +3027,7 @@ function renderSlidesBanner(){
   wrap.classList.remove('hidden');
   window._slidesIdx = 0;
   track.innerHTML = BANNER_SLIDES.map(src=>`<img src="${src}">`).join('');
-  dots.innerHTML = BANNER_SLIDES.map((s,i)=>`<span class="${i===0?'active':''}"></span>`).join('');
+  dots.innerHTML = BANNER_SLIDES.map((s,i)=>`<span class="${i===0?'active':''}" onclick="goToSlide(${i})"></span>`).join('');
   track.style.transform = 'translateX(0%)';
   if(BANNER_SLIDES.length > 1){
     window._slidesTimer = setInterval(()=>{
@@ -2780,15 +3045,57 @@ function goToSlide(i){
   Array.from(dots.children).forEach((d,idx)=>d.classList.toggle('active', idx===i));
 }
 
+// The homepage's square-tile slot used to be "Shop by Category"; it's now "Shop with Brands"
+// (see renderBrandShowcase). Kept under its old name so every place that already calls this
+// after a product/category change keeps that tile grid in sync without extra wiring.
 function renderCategoryTiles(){
-  const cats = [...new Set(visibleProducts().map(p=>p.category))];
-  document.getElementById('catGrid').innerHTML = cats.slice(0,8).map(c=>{
-    const rep = visibleProducts().find(p=>p.category===c);
-    const img = CATEGORY_IMAGES[c] || rep.image;
-    return `<div class="cat-tile" onclick="openCategoryPage('${c}')">
-      <img src="${img}"><div class="cat-label">${c}</div>
+  renderBrandShowcase();
+}
+
+/* Backgrounds cycled per circle, so each one reads like an icon on its own colored disc instead
+   of a plain photo crop. Shades pulled from the store's own gold/maroon identity (--maroon /
+   --maroon-light) rather than unrelated pastel tones, so the circles always match the storefront
+   palette. */
+const CAT_CIRCLE_PALETTE = ['rgba(200,155,74,0.16)','rgba(200,155,74,0.28)','rgba(140,107,46,0.30)','rgba(200,155,74,0.40)','rgba(140,107,46,0.20)','rgba(200,155,74,0.22)','rgba(140,107,46,0.42)','rgba(200,155,74,0.34)'];
+
+/* Hero circle row right under the header — fully independent from the square "Shop by Category"
+   tiles further down the page. Its own admin-managed list (CIRCLE_ITEMS): its own names, its own
+   images, and an optional link to a category page. Tapping a circle opens its linked category, if
+   one was set; circles with no link are purely decorative/informational. */
+function renderCircleItems(){
+  const wrap = document.getElementById('catCircleWrap');
+  const strip = document.getElementById('catCircleStrip');
+  if(!wrap || !strip) return;
+  const items = CIRCLE_ITEMS || [];
+  if(!items.length){ wrap.classList.add('hidden'); strip.innerHTML=''; return; }
+  wrap.classList.remove('hidden');
+  strip.innerHTML = items.map((it,i)=>{
+    const bg = CAT_CIRCLE_PALETTE[i % CAT_CIRCLE_PALETTE.length];
+    const safeLink = (it.link||'').replace(/'/g,"\\'");
+    const clickAttr = it.link ? ` onclick="openCategoryPage('${safeLink}')"` : '';
+    return `<div class="cat-circle"${clickAttr}>
+      <div class="cat-circle-img" style="background:${bg};">${it.image?`<img src="${it.image}">`:''}</div>
+      <div class="cat-circle-name">${it.name}</div>
     </div>`;
   }).join('');
+}
+
+/* "Shop with Brands" — square tiles (same visual style as the old category tiles), one per
+   brand that currently has at least one visible product. Tapping a brand opens its storefront
+   page, showing only the products assigned to that brand (via the product form's Brand field). */
+function renderBrandShowcase(){
+  const grid = document.getElementById('brandShowcaseGrid');
+  if(!grid) return;
+  const activeBrands = (BRANDS||[]).filter(b=> visibleProducts().some(p=>p.brandId===b.id));
+  grid.innerHTML = activeBrands.length ? activeBrands.map(b=>{
+    const img = b.logo || (visibleProducts().find(p=>p.brandId===b.id)||{}).image || '';
+    const count = visibleProducts().filter(p=>p.brandId===b.id).length;
+    return `<div class="brand-card" onclick="openBrandPage('${b.id}')">
+      <div class="brand-card-logo">${img?`<img src="${img}">`:''}</div>
+      <div class="brand-card-name">${b.name}</div>
+      <div class="brand-card-count">${count} ${count===1?'Item':'Items'}</div>
+    </div>`;
+  }).join('') : '<div class="empty-note">No brands with products yet.</div>';
 }
 
 /* ================= CATEGORY PAGE ================= */
@@ -2796,6 +3103,10 @@ function openCategoryPage(cat){
   navigateTo('category', {cat});
 }
 function closeCategoryPage(){ goBack(); }
+function openBrandPage(brandId){
+  navigateTo('brand', {brandId});
+}
+function closeBrandPage(){ goBack(); }
 
 function onSearchInput(e){
   const v = e.target.value.trim();
@@ -2823,11 +3134,13 @@ function selectSearchResult(id){
   openProductModal(id);
 }
 
+function brandNameById(id){ const b = (BRANDS||[]).find(x=>x.id===id); return b ? b.name : ''; }
 function productCardHTML(p){
   const soldOut = p.qty <= 0;
   const hasDiscount = p.discount && p.discount > 0;
   const lowStock = !soldOut && p.qty <= 5;
   const wished = isWished(p.id);
+  const brandName = brandNameById(p.brandId);
   return `
     <div class="card">
       <div class="imgwrap" onclick="openProductModal('${p.id}')">
@@ -2836,15 +3149,15 @@ function productCardHTML(p){
         <button class="card-wish ${wished?'active':''}" onclick="event.stopPropagation(); toggleWishlist('${p.id}')">${wished?'♥':'♡'}</button>
         ${soldOut ? `<div class="soldout-badge"><span>${tr('soldOut')}</span></div>` : ''}
         <img src="${p.image}" alt="${p.name}">
-      </div>
-      <div class="card-body">
-        <div class="cat">${p.category}</div>
-        <h3>${p.name}</h3>
-        ${hasDiscount && p.saleEndsAt ? `<div class="sale-countdown" data-end="${p.saleEndsAt}">${formatCountdown(p.saleEndsAt)}</div>` : ''}
-        <div class="price-row">
+        <div class="card-price-float">
           ${hasDiscount ? `<span class="price discount">${fmtMoney(p.discount)}</span><span class="price strike">${fmtMoney(p.price)}</span>` : `<span class="price">${fmtMoney(p.price)}</span>`}
         </div>
-        <button class="quick-add" ${soldOut?'disabled':''} onclick="quickAdd('${p.id}')">${soldOut?tr('soldOut'):tr('quickAdd')}</button>
+        <button class="quick-add-fab" ${soldOut?'disabled':''} onclick="event.stopPropagation(); quickAdd('${p.id}')" title="${soldOut?tr('soldOut'):tr('quickAdd')}">+</button>
+      </div>
+      <div class="card-body">
+        ${brandName ? `<div class="card-brand">${brandName}</div>` : `<div class="cat">${p.category}</div>`}
+        <h3>${p.name}</h3>
+        ${hasDiscount && p.saleEndsAt ? `<div class="sale-countdown" data-end="${p.saleEndsAt}">${formatCountdown(p.saleEndsAt)}</div>` : ''}
       </div>
     </div>`;
 }
@@ -2856,14 +3169,6 @@ function renderProducts(){
   grid.innerHTML = list.map(productCardHTML).join('');
 }
 
-function renderBestSellers(){
-  const grid = document.getElementById('bestSellersGrid');
-  if(!grid) return;
-  const vis = visibleProducts();
-  const sold = vis.filter(p=>(p.purchases||0)>0).sort((a,b)=>(b.purchases||0)-(a.purchases||0));
-  const list = (sold.length ? sold : vis).slice(0,6);
-  grid.innerHTML = list.length ? list.map(productCardHTML).join('') : '<div class="empty-note" style="grid-column:1/-1;">No products yet.</div>';
-}
 /* ================= PRODUCT PAGE ================= */
 function galleryFor(p){
   if(p.images && p.images.length){ return p.images; }
@@ -2952,11 +3257,10 @@ function renderProductPage(){
         <span style="color:var(--muted); font-size:12px;">${p.qty>0 ? tr('inStock').replace('{n}',p.qty) : tr('outOfStock')}</span>
       </div>
 
-      <div class="pp-actions">
+      <div class="pp-sticky-actions">
         <button class="add-cart-btn" ${p.qty<=0?'disabled':''} onclick="addToCartFromModal()">${p.qty<=0?tr('soldOut'):tr('addToCart')+' — '+fmtMoney((hasDiscount?p.discount:p.price)*window._modalQty)}</button>
-        <button class="share-btn" onclick="shareProduct('${p.id}')"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.5" x2="15.4" y2="6.5"></line><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line></svg></button>
+        <button class="buy-now-btn" ${p.qty<=0?'disabled':''} onclick="buyItNow()">${tr('buyItNow')}</button>
       </div>
-      <button class="buy-now-btn" ${p.qty<=0?'disabled':''} onclick="buyItNow()">${tr('buyItNow')}</button>
 
       <div class="pp-tabs">
         <button class="${currentTab==='desc'?'active':''}" onclick="setTab('desc')">${tr('description')}</button>
@@ -2965,6 +3269,10 @@ function renderProductPage(){
       <div class="pp-tab-panel ${currentTab==='desc'?'active':''}" id="tabDesc"><p>${p.desc||tr('noDescription')}</p></div>
       <div class="pp-tab-panel ${currentTab==='details'?'active':''}" id="tabDetails"><ul>${(p.details||[]).map(d=>`<li>${d}</li>`).join('') || '<li>'+tr('noDetails')+'</li>'}</ul></div>
 
+      <div class="reviews-head">
+        <div class="opt-label" style="margin:0;">${tr('reviews')}</div>
+        ${approvedReviews(p).length ? `<div class="rev-summary"><span class="rev-summary-score">${(approvedReviews(p).reduce((s,r)=>s+(r.rating||0),0)/approvedReviews(p).length).toFixed(1)}</span><span class="rev-summary-stars">${starsHTML(approvedReviews(p).reduce((s,r)=>s+(r.rating||0),0)/approvedReviews(p).length)}</span><span class="rev-summary-count">(${approvedReviews(p).length})</span></div>` : ''}
+      </div>
       <button class="review-toggle" onclick="toggleReviewForm()">${tr('leaveReview')}</button>
       <div class="review-form" id="reviewForm">
         <div class="star-input" id="revStarInput">${[1,2,3,4,5].map(i=>`<span data-v="${i}" onclick="setReviewRating(${i})">☆</span>`).join('')}</div>
@@ -2984,6 +3292,8 @@ function renderProductPage(){
     </div>
   `;
   attachGallerySwipe();
+  const wishBtn = document.getElementById('ppWishBtn');
+  if(wishBtn) wishBtn.classList.toggle('active', isWished(p.id));
   _lastProductPageSig = productPageSignature(p);
 }
 function setGallery(i){
@@ -3196,7 +3506,6 @@ function toggleWishlist(id){
   syncActivityToCustomer();
   renderWishlistBadge();
   renderProducts();
-  renderBestSellers();
   if(currentProduct) renderProductPage();
   if(!document.getElementById('wishlistOverlay').classList.contains('hidden')) renderWishlist();
   setData('atlas:wishlist', WISHLIST, false);
@@ -3762,7 +4071,6 @@ async function placeOrder(){
     if(wasFromCart){ CART = []; setData('atlas:cart', CART, false); }
     CHECKOUT_ITEMS = [];
     renderCart();
-    renderBestSellers();
     document.getElementById('ckName').value=''; document.getElementById('ckPhone').value=''; document.getElementById('ckPhone2').value=''; document.getElementById('ckAddress').value=''; document.getElementById('ckGov').value='';
     msg.textContent='';
     LAST_ORDER = order;
@@ -3790,6 +4098,7 @@ async function openAdmin(){
   if(!ADMIN_LOGGED_IN){
     document.getElementById('admLoginErr').textContent='';
     document.getElementById('admLoginPass').value='';
+    document.getElementById('admLoginBrandKey').value='';
     document.getElementById('adminLoginBackdrop').classList.remove('hidden');
     setTimeout(()=>document.getElementById('admLoginPass').focus(), 50);
     return;
@@ -3799,12 +4108,31 @@ async function openAdmin(){
 }
 async function submitAdminLogin(){
   const pass = document.getElementById('admLoginPass').value;
+  const brandKey = document.getElementById('admLoginBrandKey').value.trim();
   SETTINGS = SETTINGS || await getData('atlas:settings', defaultSettings(), true);
+  BRANDS = await getData('atlas:brands', BRANDS || [], true);
+
+  if(brandKey){
+    // Brand-admin login: match the brand's search key + password
+    const brand = BRANDS.find(b=>b.searchKey.toLowerCase() === brandKey.toLowerCase());
+    if(!brand || pass !== brand.password){
+      document.getElementById('admLoginErr').textContent = 'Incorrect brand key or password';
+      return;
+    }
+    ADMIN_LOGGED_IN = true;
+    ACTIVE_BRAND_ID = brand.id;
+    document.getElementById('adminLoginBackdrop').classList.add('hidden');
+    navigateTo('admin');
+    await loadAdminAndShow();
+    return;
+  }
+
   if(pass !== (SETTINGS.password || '123')){
     document.getElementById('admLoginErr').textContent = 'Incorrect password';
     return;
   }
   ADMIN_LOGGED_IN = true;
+  ACTIVE_BRAND_ID = null;
   SETTINGS.lastLogin = new Date().toLocaleString();
   await setData('atlas:settings', SETTINGS, true);
   document.getElementById('adminLoginBackdrop').classList.add('hidden');
@@ -3825,12 +4153,42 @@ async function loadAdminAndShow(){
   SHIPPING = await getData('atlas:shipping', SHIPPING, true);
   SETTINGS = await getData('atlas:settings', SETTINGS || defaultSettings(), true);
   SIZEGUIDES = await getData('atlas:sizeguides', SIZEGUIDES, true);
+  BRANDS = await getData('atlas:brands', BRANDS, true);
+  applyAdminRoleScoping();
   document.getElementById('admin').classList.remove('hidden');
-  switchAdminSection('products');
+  switchAdminSection(isBrandAdmin() ? 'products' : 'products');
+}
+function applyAdminRoleScoping(){
+  const nav = document.getElementById('adminNav');
+  const statsSec = document.getElementById('sec-statistics');
+  const badge = document.getElementById('brandAdminBadge');
+  const adminEl = document.getElementById('admin');
+  const navBrandOrders = document.getElementById('navBrandOrders');
+  const navBrandReturns = document.getElementById('navBrandReturns');
+  const navBrandReviews = document.getElementById('navBrandReviews');
+  if(isBrandAdmin()){
+    nav.classList.add('role-brand');
+    adminEl.classList.add('brand-mode');
+    if(statsSec) statsSec.classList.add('brand-mode');
+    if(badge){ badge.textContent = (myBrand()?.name || 'Brand') + ' Admin'; badge.classList.remove('hidden'); }
+    if(navBrandOrders) navBrandOrders.classList.remove('hidden');
+    if(navBrandReturns) navBrandReturns.classList.remove('hidden');
+    if(navBrandReviews) navBrandReviews.classList.remove('hidden');
+  }else{
+    nav.classList.remove('role-brand');
+    adminEl.classList.remove('brand-mode');
+    if(statsSec) statsSec.classList.remove('brand-mode');
+    if(badge) badge.classList.add('hidden');
+    if(navBrandOrders) navBrandOrders.classList.add('hidden');
+    if(navBrandReturns) navBrandReturns.classList.add('hidden');
+    if(navBrandReviews) navBrandReviews.classList.add('hidden');
+  }
 }
 function exitAdmin(){
+  ADMIN_LOGGED_IN = false;
+  ACTIVE_BRAND_ID = null;
   goBack();
-  renderMenu(); renderCategoryTiles(); renderProducts(); renderBestSellers(); renderBanner();
+  renderMenu(); renderCategoryTiles(); renderProducts(); renderBanner();
 }
 function switchAdminSection(sec){
   window._lastAdminSection = sec;
@@ -3838,8 +4196,10 @@ function switchAdminSection(sec){
   document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-'+sec).classList.add('active');
   if(sec==='products') renderProductsTable();
-  if(sec==='banner'){ renderBannerAdmin(); renderSlidesAdmin(); }
   if(sec==='orders') renderOrdersTable();
+  if(sec==='brandorders') renderBrandOrdersAdmin();
+  if(sec==='brandreturns') renderBrandReturnRequestsAdmin();
+  if(sec==='brandreviews') renderBrandReviewsAdmin();
   if(sec==='returns'){ populateReturnProductSelect(); renderReturnsAdmin(); }
   if(sec==='returnrequests') renderReturnRequestsAdmin();
   if(sec==='customers') renderCustomersTable();
@@ -3847,10 +4207,13 @@ function switchAdminSection(sec){
   if(sec==='shipping') renderShippingAdmin();
   if(sec==='sizeguides') renderSizeGuidesAdmin();
   if(sec==='categoryimages') renderCategoryImagesAdmin();
+  if(sec==='circleitems') renderCircleItemsAdmin();
   if(sec==='academy') renderAcademyAdminTable();
   if(sec==='private') renderPrivateAdminTable();
   if(sec==='intro'){ renderHomeTilesAdmin(); renderIntroSlidesAdmin(); }
   if(sec==='bookings') renderBookingsAdminTable();
+  if(sec==='brands') renderBrandsAdmin();
+  if(sec==='banner') renderSlidesAdmin();
   if(sec==='statistics') renderStatistics();
   if(sec==='notifications') renderNotifications();
   if(sec==='reviews') renderReviewsTable();
@@ -3891,7 +4254,8 @@ function isProductIncomplete(p){
   return !(p.images && p.images.length) || !(p.desc && p.desc.trim());
 }
 function renderProductsTable(){
-  const list = PRODUCTS.filter(p => PRODUCTS_FILTER==='archived' ? p.archived : !p.archived);
+  const scope = isBrandAdmin() ? PRODUCTS.filter(p=>p.brandId===ACTIVE_BRAND_ID) : PRODUCTS;
+  const list = scope.filter(p => PRODUCTS_FILTER==='archived' ? p.archived : !p.archived);
   document.getElementById('productsTable').innerHTML = list.map(p=>`
     <tr>
       <td><img class="thumb" src="${p.image}"></td>
@@ -3907,14 +4271,36 @@ function renderProductsTable(){
       </td>
     </tr>`).join('') || `<tr><td colspan="9" class="empty-note">No ${PRODUCTS_FILTER} products.</td></tr>`;
 }
+/* Category is a controlled list (drawn from the curated CATEGORIES, approved by an admin with a
+   cover image) instead of free text — but any admin, brand admin included, can type a brand new
+   category name. Typing one doesn't add it live: it's queued in PENDING_CATEGORIES until an admin
+   sets its cover image, so the storefront never shows a category with no image. */
+function populatePfCategorySelect(selected){
+  const sel = document.getElementById('pfCategory');
+  const cats = CATEGORIES.slice();
+  if(selected && !cats.includes(selected)) cats.push(selected); // keep legacy/custom category visible while editing
+  let html = cats.map(c=>`<option value="${c}" ${c===selected?'selected':''}>${c}</option>`).join('');
+  html += `<option value="__new__" ${selected===''&&!cats.length?'selected':''}>+ Add new category…</option>`;
+  sel.innerHTML = html || '<option value="">— No categories yet —</option>';
+  document.getElementById('pfCategoryNew').classList.toggle('hidden', sel.value !== '__new__');
+}
+function onPfCategoryChange(){
+  const sel = document.getElementById('pfCategory');
+  document.getElementById('pfCategoryNew').classList.toggle('hidden', sel.value !== '__new__');
+}
 function openProductForm(id){
   editingProductId = id || null;
   const panel = document.getElementById('productFormPanel');
   panel.classList.add('open');
+  const brandSel = document.getElementById('pfBrand');
+  if(brandSel){
+    brandSel.innerHTML = '<option value="">— No brand / house product —</option>' +
+      BRANDS.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+  }
+  populatePfCategorySelect(id ? PRODUCTS.find(x=>x.id===id)?.category : '');
   if(id){
     const p = PRODUCTS.find(x=>x.id===id);
     document.getElementById('pfName').value = p.name;
-    document.getElementById('pfCategory').value = p.category;
     document.getElementById('pfPrice').value = p.price;
     document.getElementById('pfDiscount').value = p.discount||'';
     document.getElementById('pfSaleEnd').value = p.saleEndsAt||'';
@@ -3929,8 +4315,11 @@ function openProductForm(id){
     window._pfImages = (p.images && p.images.length) ? p.images.slice() : (p.image ? [p.image] : []);
     window._pfSizeMode = p.sizes.some(s=>/^\d/.test(s)) ? 'numbers' : 'letters';
     window._pfExtraSizes = p.sizes.filter(s=>!pfSizeCandidates(window._pfSizeMode).includes(s));
+    if(brandSel) brandSel.value = p.brandId || '';
   } else {
-    ['pfName','pfCategory','pfPrice','pfDiscount','pfSaleEnd','pfQty','pfSku','pfSizes','pfColors','pfTags','pfVideo','pfDesc','pfDetails'].forEach(id=>document.getElementById(id).value='');
+    ['pfName','pfPrice','pfDiscount','pfSaleEnd','pfQty','pfSku','pfSizes','pfColors','pfTags','pfVideo','pfDesc','pfDetails'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pfCategoryNew').value='';
+    if(brandSel) brandSel.value = isBrandAdmin() ? ACTIVE_BRAND_ID : '';
     window._pfImages = [];
     window._pfSizeMode = 'letters';
     window._pfExtraSizes = [];
@@ -4052,8 +4441,17 @@ async function saveProduct(){
   const name = document.getElementById('pfName').value.trim();
   if(!name){ showToast('Product name is required'); return; }
   const images = (window._pfImages && window._pfImages.length) ? window._pfImages.slice() : ['https://picsum.photos/seed/'+uid('new')+'/600/750'];
+  const catSel = document.getElementById('pfCategory').value;
+  const isNewCategoryTyped = catSel === '__new__';
+  const category = isNewCategoryTyped ? document.getElementById('pfCategoryNew').value.trim() : catSel;
+  if(!category){ showToast(LANG==='ar' ? 'اختار كاتيجوري للمنتج' : 'Please choose a category for this product'); return; }
+  const needsApproval = isNewCategoryTyped && !CATEGORIES.includes(category);
+  const brandSelEl = document.getElementById('pfBrand');
+  // A brand admin's own products must always stay pinned to their brand, even though the
+  // Brand field is hidden for them in the UI — never trust only the (possibly-hidden) select.
+  const brandId = isBrandAdmin() ? ACTIVE_BRAND_ID : (brandSelEl ? brandSelEl.value : '');
   const data = {
-    name, category: document.getElementById('pfCategory').value.trim() || 'Uncategorized',
+    name, category, brandId,
     price: parseFloat(document.getElementById('pfPrice').value) || 0,
     discount: parseFloat(document.getElementById('pfDiscount').value) || 0,
     saleEndsAt: document.getElementById('pfSaleEnd').value || null,
@@ -4070,12 +4468,31 @@ async function saveProduct(){
   };
   if(data.sizes.length===0) data.sizes=['One Size'];
   if(data.colors.length===0) data.colors=['Default'];
+  const productId = editingProductId || uid('p');
   if(editingProductId){ const p = PRODUCTS.find(x=>x.id===editingProductId); Object.assign(p, data); }
-  else { PRODUCTS.push({id:uid('p'), views:0, addToCart:0, purchases:0, reviews:[], archived:false, ...data}); }
+  else { PRODUCTS.push({id:productId, views:0, addToCart:0, purchases:0, reviews:[], archived:false, ...data}); }
   const saved = await persistProducts();
+  if(needsApproval) await queuePendingCategory(category, productId);
   closeProductForm();
   renderProductsTable();
-  showToast(saved===false ? '⚠ Save may have failed — try fewer or smaller photos' : 'Product saved');
+  if(saved===false) showToast('⚠ Save may have failed — try fewer or smaller photos');
+  else if(needsApproval) showToast(LANG==='ar' ? 'اتحفظ المنتج — الكاتيجوري الجديدة هتظهر في المتجر بعد ما تحط لها صورة' : 'Product saved — the new category will appear on the storefront once its cover image is set');
+  else showToast('Product saved');
+}
+/* A category typed on the product form doesn't go live immediately — it's queued here until an
+   admin sets its cover image (see approvePendingCategory), keeping every category tile on the
+   storefront backed by a real image instead of a random product photo. */
+async function queuePendingCategory(name, productId){
+  let entry = PENDING_CATEGORIES.find(p=>p.name===name);
+  if(entry){
+    if(!entry.productIds.includes(productId)) entry.productIds.push(productId);
+  } else {
+    entry = {id:uid('pc'), name, productIds:[productId], date:new Date().toISOString()};
+    PENDING_CATEGORIES.push(entry);
+    await addNotification('category', LANG==='ar' ? `كاتيجوري جديدة "${name}" محتاجة صورة غلاف عشان تظهر في المتجر` : `New category "${name}" needs a cover image before it can go live`);
+  }
+  await setData('atlas:pendingcategories', PENDING_CATEGORIES, true);
+  if(document.getElementById('sec-categoryimages')) renderCategoryImagesAdmin();
 }
 async function duplicateProduct(id){
   const p = PRODUCTS.find(x=>x.id===id);
@@ -4115,37 +4532,7 @@ async function deleteProduct(id){
   showToast('Product deleted');
 }
 
-function renderBannerAdmin(){
-  const prev = document.getElementById('bannerAdminPreview');
-  prev.src = BANNER.image || 'https://picsum.photos/seed/aurabanner/900/450';
-  document.getElementById('bnSub').value = BANNER.sub || '';
-}
-async function onBannerFileChange(e){
-  const file = e.target.files[0]; e.target.value=''; if(!file) return;
-  startImageCropQueue([file], 2/1, async (results)=>{ // matches .banner-admin-preview (16:8)
-    if(!results.length) return;
-    BANNER.image = results[0];
-    await setData('atlas:banner', BANNER, true);
-    renderBannerAdmin(); renderBanner();
-    showToast('Banner image updated');
-  });
-}
-async function removeBannerImage(){ BANNER.image = null; await setData('atlas:banner', BANNER, true); renderBannerAdmin(); renderBanner(); showToast('Banner image removed'); }
-function adjustBannerImage(){
-  if(!BANNER.image){ showToast(LANG==='ar'?'مفيش صورة بانر لسه':'No banner image yet'); return; }
-  adjustExistingImage(BANNER.image, 2/1, async (result)=>{ // matches .banner-admin-preview (16:8)
-    BANNER.image = result;
-    await setData('atlas:banner', BANNER, true);
-    renderBannerAdmin(); renderBanner();
-    showToast('Banner image updated');
-  });
-}
-async function saveBannerText(){
-  BANNER.sub = document.getElementById('bnSub').value.trim();
-  await setData('atlas:banner', BANNER, true);
-  renderBanner();
-  showToast('Banner text updated');
-}
+
 
 /* ---------- MOVING BANNER (multiple images) — ADMIN ---------- */
 function renderSlidesAdmin(){
@@ -4588,8 +4975,21 @@ async function removeSizeGuide(category){
 function renderCategoryImagesAdmin(){
   const list = document.getElementById('categoryImagesList');
   if(!list) return;
-  const cats = productCategories();
-  list.innerHTML = cats.length ? cats.map(cat=>{
+  const pendingHtml = (PENDING_CATEGORIES||[]).map(entry=>{
+    return `<div class="sg-row">
+      <div class="sg-thumb-empty">${LANG==='ar'?'محتاجة صورة':'Needs image'}</div>
+      <div class="sg-info">
+        <div class="sg-cat">${entry.name} <span style="color:var(--gold); font-size:11px;">— ${LANG==='ar'?'في انتظار الموافقة':'awaiting approval'}</span></div>
+        <div class="sg-status">${LANG==='ar' ? `اتطلبت من ${entry.productIds.length} منتج` : `Requested via ${entry.productIds.length} product(s)`}</div>
+      </div>
+      <div class="sg-actions">
+        <button class="btn small" onclick="triggerPendingCategoryApproval('${entry.id}')">${LANG==='ar'?'حط صورة وفعّلها':'Add image & publish'}</button>
+        <button class="btn small danger" onclick="rejectPendingCategory('${entry.id}')">${LANG==='ar'?'رفض':'Dismiss'}</button>
+      </div>
+    </div>`;
+  }).join('');
+  const cats = CATEGORIES || [];
+  const approvedHtml = cats.length ? cats.map(cat=>{
     const img = CATEGORY_IMAGES[cat];
     const safeCat = cat.replace(/'/g,"\\'");
     return `<div class="sg-row">
@@ -4604,7 +5004,39 @@ function renderCategoryImagesAdmin(){
         ${img ? `<button class="btn small danger" onclick="removeCategoryImage('${safeCat}')">Remove</button>` : ''}
       </div>
     </div>`;
-  }).join('') : '<div class="empty-note">Add products with a category first — an image slot appears here for each category.</div>';
+  }).join('') : '<div class="empty-note">No categories yet.</div>';
+  list.innerHTML =
+    (pendingHtml ? `<div class="admin-h1" style="font-size:16px; margin-bottom:10px;">${LANG==='ar'?'كاتيجوريز محتاجة موافقتك':'Categories awaiting your approval'}</div>${pendingHtml}<div class="admin-h1" style="font-size:16px; margin:22px 0 10px;">${LANG==='ar'?'الكاتيجوريز المفعّلة':'Live categories'}</div>` : '') +
+    approvedHtml;
+}
+async function approvePendingCategory(pendingId, image){
+  const entry = PENDING_CATEGORIES.find(p=>p.id===pendingId);
+  if(!entry) return;
+  CATEGORY_IMAGES[entry.name] = image;
+  if(!CATEGORIES.includes(entry.name)) CATEGORIES.push(entry.name);
+  PENDING_CATEGORIES = PENDING_CATEGORIES.filter(p=>p.id!==pendingId);
+  await Promise.all([
+    setData('atlas:categoryimages', CATEGORY_IMAGES, true),
+    setData('atlas:categories', CATEGORIES, true),
+    setData('atlas:pendingcategories', PENDING_CATEGORIES, true),
+  ]);
+  renderCategoryImagesAdmin();
+  renderCategoryTiles();
+  showToast(LANG==='ar' ? `اتضافت كاتيجوري "${entry.name}" في المتجر` : `"${entry.name}" is now live on the storefront`);
+}
+async function rejectPendingCategory(pendingId){
+  const entry = PENDING_CATEGORIES.find(p=>p.id===pendingId);
+  if(!entry) return;
+  if(!confirm(LANG==='ar' ? `متأكد؟ هيتشال طلب كاتيجوري "${entry.name}"` : `Remove the "${entry.name}" category request?`)) return;
+  PENDING_CATEGORIES = PENDING_CATEGORIES.filter(p=>p.id!==pendingId);
+  await setData('atlas:pendingcategories', PENDING_CATEGORIES, true);
+  renderCategoryImagesAdmin();
+  showToast(LANG==='ar' ? 'اتشال الطلب' : 'Request dismissed');
+}
+function triggerPendingCategoryApproval(pendingId){
+  window._ciUploadPendingId = pendingId;
+  window._ciUploadCategory = null;
+  document.getElementById('categoryImageFile').click();
 }
 async function adjustCategoryImage(category){
   const src = CATEGORY_IMAGES[category];
@@ -4619,12 +5051,23 @@ async function adjustCategoryImage(category){
 }
 function triggerCategoryImageUpload(category){
   window._ciUploadCategory = category;
+  window._ciUploadPendingId = null;
   document.getElementById('categoryImageFile').click();
 }
 async function onCategoryImageFileChange(e){
-  const file = e.target.files[0]; const category = window._ciUploadCategory;
+  const file = e.target.files[0];
+  const category = window._ciUploadCategory;
+  const pendingId = window._ciUploadPendingId;
   e.target.value = '';
-  if(!file || !category) return;
+  if(!file) return;
+  if(pendingId){
+    startImageCropQueue([file], 1/1, async (results)=>{ // matches .cat-tile (square)
+      if(!results.length) return;
+      await approvePendingCategory(pendingId, results[0]);
+    });
+    return;
+  }
+  if(!category) return;
   startImageCropQueue([file], 1/1, async (results)=>{ // matches .cat-tile (square)
     if(!results.length) return;
     CATEGORY_IMAGES[category] = results[0];
@@ -4640,6 +5083,108 @@ async function removeCategoryImage(category){
   renderCategoryImagesAdmin();
   renderCategoryTiles();
   showToast('Category image removed for ' + category);
+}
+
+/* ================= ADMIN: CATEGORY CIRCLES (independent from Category Images) ================= */
+async function persistCircleItems(){ return await setData('atlas:circleitems', CIRCLE_ITEMS, true); }
+function renderCircleItemsAdmin(){
+  const list = document.getElementById('circleItemsList');
+  if(!list) return;
+  const items = CIRCLE_ITEMS || [];
+  list.innerHTML = items.length ? items.map((it,i)=>`
+    <div class="sg-row">
+      ${it.image ? `<img class="sg-thumb" style="border-radius:50%; width:56px; height:56px;" src="${it.image}">` : `<div class="sg-thumb-empty" style="width:56px; height:56px; border-radius:50%;">No image</div>`}
+      <div class="sg-info">
+        <div class="sg-cat">${it.name}</div>
+        <div class="sg-status">${it.link ? 'Links to “'+it.link+'”' : 'No link — decorative only'}</div>
+      </div>
+      <div class="sg-actions">
+        <button class="btn small secondary" title="Move up" ${i===0?'disabled':''} onclick="moveCircleItem('${it.id}',-1)">↑</button>
+        <button class="btn small secondary" title="Move down" ${i===items.length-1?'disabled':''} onclick="moveCircleItem('${it.id}',1)">↓</button>
+        <button class="btn small secondary" onclick="openCircleItemForm('${it.id}')">Edit</button>
+        <button class="btn small danger" onclick="deleteCircleItem('${it.id}')">Delete</button>
+      </div>
+    </div>`).join('') : '<div class="empty-note">No circles yet — add one above.</div>';
+}
+function populateCircleLinkSelect(selected){
+  const sel = document.getElementById('ciLink');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— No link (decorative only) —</option>' +
+    (CATEGORIES||[]).map(c=>`<option value="${c}" ${c===selected?'selected':''}>${c}</option>`).join('');
+}
+function openCircleItemForm(id){
+  editingCircleItemId = id || null;
+  const panel = document.getElementById('circleItemFormPanel');
+  panel.classList.add('open');
+  if(id){
+    const it = CIRCLE_ITEMS.find(x=>x.id===id);
+    document.getElementById('ciName').value = it.name || '';
+    populateCircleLinkSelect(it.link || '');
+    window._ciItemImage = it.image || null;
+  } else {
+    document.getElementById('ciName').value = '';
+    populateCircleLinkSelect('');
+    window._ciItemImage = null;
+  }
+  renderCircleItemImagePreview();
+  panel.scrollIntoView({behavior:'smooth'});
+}
+function closeCircleItemForm(){ document.getElementById('circleItemFormPanel').classList.remove('open'); editingCircleItemId = null; }
+function renderCircleItemImagePreview(){
+  const img = document.getElementById('ciImgPreview'), btn = document.getElementById('ciImgAdjustBtn');
+  if(!img) return;
+  if(window._ciItemImage){ img.src = window._ciItemImage; img.classList.remove('hidden'); if(btn) btn.classList.remove('hidden'); }
+  else { img.src=''; img.classList.add('hidden'); if(btn) btn.classList.add('hidden'); }
+}
+async function onCircleItemFileChange(e){
+  const file = e.target.files[0]; e.target.value=''; if(!file) return;
+  startImageCropQueue([file], 1/1, (results)=>{ // circular circle, so 1:1 crop
+    if(!results.length) return;
+    window._ciItemImage = results[0];
+    renderCircleItemImagePreview();
+  });
+}
+function adjustCircleItemImage(){
+  if(!window._ciItemImage){ showToast(LANG==='ar'?'ارفع صورة الأول':'Upload an image first'); return; }
+  adjustExistingImage(window._ciItemImage, 1/1, (result)=>{
+    window._ciItemImage = result;
+    renderCircleItemImagePreview();
+  });
+}
+async function saveCircleItem(){
+  const name = document.getElementById('ciName').value.trim();
+  const link = document.getElementById('ciLink').value;
+  if(!name){ showToast(LANG==='ar'?'اكتب اسم للدائرة':'Please enter a circle name'); return; }
+  const existing = editingCircleItemId ? CIRCLE_ITEMS.find(x=>x.id===editingCircleItemId) : null;
+  const data = { id: editingCircleItemId || uid('circ'), name, link: link || '', image: window._ciItemImage || null };
+  if(editingCircleItemId){
+    const idx = CIRCLE_ITEMS.findIndex(x=>x.id===editingCircleItemId);
+    if(idx>-1) CIRCLE_ITEMS[idx] = data;
+  } else {
+    CIRCLE_ITEMS.push(data);
+  }
+  await persistCircleItems();
+  renderCircleItemsAdmin();
+  renderCircleItems();
+  closeCircleItemForm();
+  showToast(LANG==='ar'?'اتحفظت الدائرة':'Circle saved');
+}
+async function deleteCircleItem(id){
+  if(!confirm(LANG==='ar'?'متأكد عايز تمسح الدائرة دي؟':'Delete this circle?')) return;
+  CIRCLE_ITEMS = CIRCLE_ITEMS.filter(x=>x.id!==id);
+  await persistCircleItems();
+  renderCircleItemsAdmin();
+  renderCircleItems();
+  showToast(LANG==='ar'?'اتمسحت الدائرة':'Circle deleted');
+}
+async function moveCircleItem(id, dir){
+  const idx = CIRCLE_ITEMS.findIndex(x=>x.id===id);
+  const swapWith = idx + dir;
+  if(idx<0 || swapWith<0 || swapWith>=CIRCLE_ITEMS.length) return;
+  [CIRCLE_ITEMS[idx], CIRCLE_ITEMS[swapWith]] = [CIRCLE_ITEMS[swapWith], CIRCLE_ITEMS[idx]];
+  await persistCircleItems();
+  renderCircleItemsAdmin();
+  renderCircleItems();
 }
 
 /* ================= PROGRAM CHOOSE (Store / Academy / Private gate) ================= */
@@ -5010,6 +5555,223 @@ async function deleteTrainer(id){
   await setData('atlas:academy', ACADEMY, true);
   renderAcademyAdminTable();
   showToast('Trainer deleted');
+}
+
+/* ================= ADMIN: BRANDS ================= */
+let editingBrandId = null;
+async function persistBrands(){ return await setData('atlas:brands', BRANDS, true); }
+function brandProductCount(brandId){ return PRODUCTS.filter(p=>p.brandId===brandId).length; }
+function brandUnitsSold(brandId){ return PRODUCTS.filter(p=>p.brandId===brandId).reduce((s,p)=>s+(p.purchases||0),0); }
+/* Revenue for a brand = sum of order line-item totals for that brand's products, active (non-cancelled) orders only */
+function brandRevenue(brandId){
+  const ids = new Set(PRODUCTS.filter(p=>p.brandId===brandId).map(p=>p.id));
+  let total = 0;
+  activeOrders().forEach(o=>o.items.forEach(i=>{ if(ids.has(i.productId)) total += (i.price||0) * i.qty; }));
+  return total;
+}
+function renderBrandsAdmin(){
+  const tbody = document.getElementById('brandsTable');
+  if(!tbody) return;
+  tbody.innerHTML = BRANDS.length ? BRANDS.map(b=>`
+    <tr>
+      <td>${b.logo ? `<img class="brand-thumb" src="${b.logo}">` : `<div class="brand-thumb" style="background:var(--bg-alt);"></div>`}</td>
+      <td>${b.name}</td>
+      <td><code>${b.searchKey}</code></td>
+      <td>${brandProductCount(b.id)}</td>
+      <td>${b.views||0}</td>
+      <td>${brandUnitsSold(b.id)}</td>
+      <td>${fmtMoney(brandRevenue(b.id))}</td>
+      <td class="row-actions">
+        <button class="btn small secondary" onclick="openBrandForm('${b.id}')">Edit</button>
+        <button class="btn small danger" onclick="deleteBrand('${b.id}')">Delete</button>
+      </td>
+    </tr>`).join('') : `<tr><td colspan="8" class="empty-note">No brands added yet.</td></tr>`;
+}
+function openBrandForm(id){
+  editingBrandId = id || null;
+  const panel = document.getElementById('brandFormPanel');
+  panel.classList.add('open');
+  if(id){
+    const b = BRANDS.find(x=>x.id===id);
+    document.getElementById('bfName').value = b.name || '';
+    document.getElementById('bfKey').value = b.searchKey || '';
+    document.getElementById('bfPassword').value = b.password || '';
+    window._bfLogo = b.logo || null;
+  } else {
+    document.getElementById('bfName').value = '';
+    document.getElementById('bfKey').value = '';
+    document.getElementById('bfPassword').value = '';
+    window._bfLogo = null;
+  }
+  renderBrandLogoPreview();
+  panel.scrollIntoView({behavior:'smooth'});
+}
+function closeBrandForm(){ document.getElementById('brandFormPanel').classList.remove('open'); editingBrandId = null; }
+function renderBrandLogoPreview(){
+  const img = document.getElementById('bfLogoPreview'), btn = document.getElementById('bfLogoAdjustBtn');
+  if(!img) return;
+  if(window._bfLogo){ img.src = window._bfLogo; img.classList.remove('hidden'); if(btn) btn.classList.remove('hidden'); }
+  else { img.src=''; img.classList.add('hidden'); if(btn) btn.classList.add('hidden'); }
+}
+async function onBrandLogoFileChange(e){
+  const file = e.target.files[0]; e.target.value=''; if(!file) return;
+  startImageCropQueue([file], 1/1, (results)=>{ // circular logo, so 1:1 crop
+    if(!results.length) return;
+    window._bfLogo = results[0];
+    renderBrandLogoPreview();
+  });
+}
+function adjustBrandLogo(){
+  if(!window._bfLogo){ showToast(LANG==='ar'?'ارفع لوجو الأول':'Upload a logo first'); return; }
+  adjustExistingImage(window._bfLogo, 1/1, (result)=>{
+    window._bfLogo = result;
+    renderBrandLogoPreview();
+  });
+}
+async function saveBrand(){
+  const name = document.getElementById('bfName').value.trim();
+  const key = document.getElementById('bfKey').value.trim();
+  const password = document.getElementById('bfPassword').value.trim();
+  if(!name){ showToast(LANG==='ar'?'اكتب اسم البراند':'Please enter a brand name'); return; }
+  if(!key){ showToast(LANG==='ar'?'اكتب مفتاح دخول للبراند':'Please enter a brand key'); return; }
+  if(!password){ showToast(LANG==='ar'?'اكتب باسورد':'Please enter a password'); return; }
+  const dup = BRANDS.find(b=>b.searchKey.toLowerCase()===key.toLowerCase() && b.id!==editingBrandId);
+  if(dup){ showToast(LANG==='ar'?'مفتاح البراند ده مستخدم قبل كده':'This brand key is already in use'); return; }
+  const existing = editingBrandId ? BRANDS.find(b=>b.id===editingBrandId) : null;
+  const data = {
+    id: editingBrandId || uid('brand'),
+    name,
+    searchKey: key,
+    password,
+    logo: window._bfLogo || null,
+    createdAt: existing ? existing.createdAt : Date.now(),
+    views: existing ? (existing.views || 0) : 0,
+  };
+  if(editingBrandId){
+    const idx = BRANDS.findIndex(x=>x.id===editingBrandId);
+    if(idx>-1) BRANDS[idx] = data;
+  } else {
+    BRANDS.push(data);
+  }
+  const brandSaved = await persistBrands();
+  renderBrandsAdmin();
+  renderBrandShowcase();
+  closeBrandForm();
+  if(brandSaved===false) showToast(LANG==='ar' ? '⚠ ممكن الحفظ يكون فشل — جرب لوجو أصغر' : '⚠ Save may have failed — try a smaller logo image');
+  else showToast(LANG==='ar'?'تم حفظ البراند':'Brand saved');
+}
+async function deleteBrand(id){
+  if(!confirm(LANG==='ar'?'متأكد عايز تمسح البراند ده؟ المنتجات بتاعته هتفضل من غير براند.':"Delete this brand? Its products will remain but become unassigned.")) return;
+  BRANDS = BRANDS.filter(x=>x.id!==id);
+  PRODUCTS.forEach(p=>{ if(p.brandId===id) p.brandId=''; });
+  await persistBrands();
+  await persistProducts();
+  renderBrandsAdmin();
+  renderBrandShowcase();
+  showToast(LANG==='ar'?'تم حذف البراند':'Brand deleted');
+}
+/* Brand-admin's own statistics view (shown instead of the full super-admin statistics page) */
+function renderBrandOwnStats(){
+  const b = myBrand();
+  if(!b) return;
+  const myProducts = PRODUCTS.filter(p=>p.brandId===b.id);
+  const myIds = new Set(myProducts.map(p=>p.id));
+  const ordersInRange = ORDERS.filter(o=>inStatsRange(o.date));
+  const activeInRange = activeOrders(ordersInRange);
+  let unitsSold = 0, revenue = 0;
+  const perProduct = {};
+  activeInRange.forEach(o=>o.items.forEach(i=>{
+    if(!myIds.has(i.productId)) return;
+    const lineTotal = (i.price||0) * i.qty;
+    unitsSold += i.qty; revenue += lineTotal;
+    if(!perProduct[i.productId]) perProduct[i.productId] = {qty:0, revenue:0};
+    perProduct[i.productId].qty += i.qty;
+    perProduct[i.productId].revenue += lineTotal;
+  }));
+  const cards = [
+    ['🛍', myProducts.length, 'My Products'],
+    ['👁', b.views||0, 'Brand Page Views'],
+    ['📦', unitsSold, 'Units Sold'],
+    ['💰', fmtMoney(revenue), 'Revenue'],
+  ];
+  const grid = document.getElementById('brandStatsGrid');
+  if(grid) grid.innerHTML = cards.map(c=>`<div class="stat-card"><div class="si">${c[0]}</div><div class="sv">${c[1]}</div><div class="sl">${c[2]}</div></div>`).join('');
+  const rows = myProducts.map(p=>({product:p, qty:(perProduct[p.id]?.qty)||0, revenue:(perProduct[p.id]?.revenue)||0}))
+    .sort((a,b)=>b.qty-a.qty);
+  const table = document.getElementById('brandProductsStatsTable');
+  if(table) table.innerHTML = rows.map(x=>`
+    <tr><td>${x.product.name}</td><td>${x.product.category}</td><td>${x.qty}</td><td>${fmtMoney(x.revenue)}</td></tr>
+  `).join('') || '<tr><td colspan="4" class="empty-note">No products yet.</td></tr>';
+}
+
+/* Read-only order view for a brand admin: shows every order that contains at least one of
+   their products, but only their own line items (qty/revenue) — never other brands' items or
+   the ability to change status, since a shared order is still owned by the store admin. */
+function renderBrandOrdersAdmin(){
+  const tbody = document.getElementById('brandOrdersTable');
+  if(!tbody) return;
+  const b = myBrand();
+  if(!b){ tbody.innerHTML = ''; return; }
+  const myIds = new Set(PRODUCTS.filter(p=>p.brandId===b.id).map(p=>p.id));
+  const rows = ORDERS.filter(o=>o.items.some(i=>myIds.has(i.productId)))
+    .sort((a,b2)=>b2.date.localeCompare(a.date))
+    .map(o=>{
+      const myItems = o.items.filter(i=>myIds.has(i.productId));
+      const qty = myItems.reduce((s,i)=>s+i.qty,0);
+      const revenue = myItems.reduce((s,i)=>s+(i.price||0)*i.qty,0);
+      const itemsLabel = myItems.map(i=>`${i.name} ×${i.qty}`).join(', ');
+      return `<tr><td>${o.id}</td><td>${o.customer}</td><td>${o.phone||''}</td><td>${o.governorate||''}</td><td>${o.date}</td>
+        <td>${itemsLabel} (${qty})</td><td>${fmtMoney(revenue)}</td>
+        <td><span class="status-pill status-${o.status}">${o.status}</span></td></tr>`;
+    });
+  tbody.innerHTML = rows.join('') || '<tr><td colspan="8" class="empty-note">No orders include your products yet.</td></tr>';
+}
+
+/* Read-only return-request view for a brand admin: any request tied to an order that contains
+   at least one of their products. A whole order (not a single line item) is what gets returned,
+   so a request may also involve another brand's items — status stays store-admin-controlled. */
+function renderBrandReturnRequestsAdmin(){
+  const tbody = document.getElementById('brandReturnRequestsTable');
+  if(!tbody) return;
+  const b = myBrand();
+  if(!b){ tbody.innerHTML = ''; return; }
+  const myIds = new Set(PRODUCTS.filter(p=>p.brandId===b.id).map(p=>p.id));
+  const myOrderIds = new Set(ORDERS.filter(o=>o.items.some(i=>myIds.has(i.productId))).map(o=>o.id));
+  const list = RETURN_REQUESTS.filter(r=>myOrderIds.has(r.orderId)).slice().reverse();
+  const pendingCount = list.filter(r=>r.status==='pending').length;
+  const badge = document.getElementById('brandReturnReqBadge');
+  if(badge){ badge.textContent = pendingCount; badge.classList.toggle('hidden', pendingCount===0); }
+  tbody.innerHTML = list.map(r=>`
+    <tr>
+      <td>${r.orderId}</td>
+      <td>${r.customer||''}</td>
+      <td>${r.phone||''}</td>
+      <td style="max-width:220px;">${r.reason||''}</td>
+      <td>${r.date||''}</td>
+      <td><span class="status-pill status-${r.status}">${r.status}</span></td>
+    </tr>`).join('') || '<tr><td colspan="6" class="empty-note">No return requests for your products yet.</td></tr>';
+}
+
+/* Read-only reviews view for a brand admin: every review (pending or approved) left on one of
+   their own products only. */
+function renderBrandReviewsAdmin(){
+  const tbody = document.getElementById('brandReviewsTable');
+  if(!tbody) return;
+  const b = myBrand();
+  if(!b){ tbody.innerHTML = ''; return; }
+  const myProducts = PRODUCTS.filter(p=>p.brandId===b.id);
+  const list = [];
+  myProducts.forEach(p=>(p.reviews||[]).forEach(r=>list.push({...r, productName:p.name})));
+  list.sort((a,c)=>(c.date||'').localeCompare(a.date||''));
+  tbody.innerHTML = list.map(r=>`
+    <tr>
+      <td>${r.productName}</td>
+      <td>${r.name||''}</td>
+      <td>${'★'.repeat(r.rating||0)}${'☆'.repeat(5-(r.rating||0))}</td>
+      <td style="max-width:260px;">${r.text||''}</td>
+      <td>${r.date||''}</td>
+      <td><span class="status-pill status-${r.status||'pending'}">${r.status||'pending'}</span></td>
+    </tr>`).join('') || '<tr><td colspan="6" class="empty-note">No reviews on your products yet.</td></tr>';
 }
 
 /* ================= ADMIN: PRIVATE & FITNESS (trainers) ================= */
@@ -5386,7 +6148,82 @@ function bestSellersInRange(ordersInRange){
     .filter(x=>x.product)
     .sort((a,b)=>b.qty-a.qty);
 }
+/* Super-admin "all brands" overview: for every brand — product count, how many orders touch
+   it, exact units sold & revenue (this brand's share of shared orders only), and what its
+   reviews say (average rating + a good/mixed/poor read). Respects the same date-range filter
+   as the rest of the statistics page. */
+function renderSuperBrandsOverview(){
+  const activeInRange = activeOrders(ORDERS.filter(o=>inStatsRange(o.date)));
+  const rows = BRANDS.map(b=>{
+    const myProducts = PRODUCTS.filter(p=>p.brandId===b.id);
+    const myIds = new Set(myProducts.map(p=>p.id));
+    const brandOrders = activeInRange.filter(o=>o.items.some(i=>myIds.has(i.productId)));
+    let unitsSold = 0, revenue = 0;
+    brandOrders.forEach(o=>o.items.forEach(i=>{ if(myIds.has(i.productId)){ unitsSold += i.qty; revenue += (i.price||0)*i.qty; } }));
+    const revs = [];
+    myProducts.forEach(p=>(p.reviews||[]).forEach(r=>revs.push(r)));
+    const avgRating = revs.length ? revs.reduce((s,r)=>s+(r.rating||0),0)/revs.length : 0;
+    return { brand:b, products: myProducts.length, orders: brandOrders.length, unitsSold, revenue, avgRating, reviewCount: revs.length };
+  });
+  const totalBrandOrders = rows.reduce((s,r)=>s+r.orders,0);
+  const totalBrandRevenue = rows.reduce((s,r)=>s+r.revenue,0);
+  const totalBrandUnits = rows.reduce((s,r)=>s+r.unitsSold,0);
+  const summaryCards = [
+    ['🏷️', BRANDS.length, 'Total Brands'],
+    ['📦', totalBrandOrders, 'Orders Touching a Brand'],
+    ['🛒', totalBrandUnits, 'Brand Units Sold'],
+    ['💰', fmtMoney(totalBrandRevenue), 'Brand Revenue'],
+  ];
+  const summaryGrid = document.getElementById('superBrandsSummaryGrid');
+  if(summaryGrid) summaryGrid.innerHTML = summaryCards.map(c=>`<div class="stat-card"><div class="si">${c[0]}</div><div class="sv">${c[1]}</div><div class="sl">${c[2]}</div></div>`).join('');
+  const table = document.getElementById('superBrandsStatsTable');
+  if(table) table.innerHTML = rows.map(r=>{
+    const sentiment = !r.reviewCount ? '—'
+      : r.avgRating>=4 ? '<span class="brand-sentiment-good">🙂 Good</span>'
+      : r.avgRating<=2.5 ? '<span class="brand-sentiment-poor">🙁 Poor</span>'
+      : '<span class="brand-sentiment-mixed">😐 Mixed</span>';
+    const ratingLabel = r.reviewCount ? `${r.avgRating.toFixed(1)} ⭐ (${r.reviewCount})` : '—';
+    return `<tr>
+      <td>${r.brand.name}</td><td>${r.products}</td><td>${r.orders}</td><td>${r.unitsSold}</td><td>${fmtMoney(r.revenue)}</td>
+      <td>${ratingLabel}</td><td>${sentiment}</td>
+      <td><button class="btn small secondary" onclick="showSuperBrandOrders('${r.brand.id}')">View Orders</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" class="empty-note">No brands added yet.</td></tr>';
+  // If a brand's order-detail table is already open, keep it in sync with the current filter
+  const openTitle = document.getElementById('superBrandOrdersDetailTitle');
+  const openId = openTitle && openTitle.dataset.brandId;
+  if(openId && rows.some(r=>r.brand.id===openId)) showSuperBrandOrders(openId, true);
+}
+/* Order-by-order breakdown for a single brand: every order in the current date range that
+   contains at least one of that brand's products, showing only that brand's share of the order. */
+function showSuperBrandOrders(brandId, silent){
+  const b = BRANDS.find(x=>x.id===brandId);
+  if(!b) return;
+  const myIds = new Set(PRODUCTS.filter(p=>p.brandId===b.id).map(p=>p.id));
+  const activeInRange = activeOrders(ORDERS.filter(o=>inStatsRange(o.date)));
+  const rows = activeInRange.filter(o=>o.items.some(i=>myIds.has(i.productId)))
+    .sort((a,c)=>c.date.localeCompare(a.date))
+    .map(o=>{
+      const myItems = o.items.filter(i=>myIds.has(i.productId));
+      const qty = myItems.reduce((s,i)=>s+i.qty,0);
+      const total = myItems.reduce((s,i)=>s+(i.price||0)*i.qty,0);
+      const itemsLabel = myItems.map(i=>`${i.name} ×${i.qty}`).join(', ');
+      return `<tr><td>${o.id}</td><td>${o.customer}</td><td>${o.date}</td><td>${itemsLabel}</td><td>${qty}</td><td>${fmtMoney(total)}</td>
+        <td><span class="status-pill status-${o.status}">${o.status}</span></td></tr>`;
+    });
+  const titleEl = document.getElementById('superBrandOrdersDetailTitle');
+  if(titleEl){ titleEl.textContent = `Orders — ${b.name}`; titleEl.dataset.brandId = b.id; }
+  const tableEl = document.getElementById('superBrandOrdersDetailTable');
+  if(tableEl) tableEl.innerHTML = rows.join('') || '<tr><td colspan="7" class="empty-note">No orders for this brand in the selected range.</td></tr>';
+  const wrap = document.getElementById('superBrandOrdersDetail');
+  if(wrap){
+    wrap.classList.remove('hidden');
+    if(!silent) wrap.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
 function renderStatistics(){
+  if(isBrandAdmin()){ renderBrandOwnStats(); return; }
+  renderSuperBrandsOverview();
   const reportMonthEl = document.getElementById('reportMonth');
   if(reportMonthEl && !reportMonthEl.value) reportMonthEl.value = todayStr().slice(0,7);
   const hasFilter = !!(STATS_FILTER.from || STATS_FILTER.to);
@@ -5413,7 +6250,7 @@ function renderStatistics(){
   const cards = [
     ['👥', totalVisitors, hasFilter?'Visitors (range)':'Total Visitors'],['📅', todayVisitors, "Today's Visitors"],['🗓', monthVisitors, "This Month's Visitors"],
     ['💰', fmtMoney(totalSales), hasFilter?'Sales (range)':'Total Sales'],['🚫', fmtMoney(salesLost), 'Sales Lost (Cancelled)'],['📦', ordersInRange.length, hasFilter?'Orders (range)':'Total Orders'],
-    ['🛍', PRODUCTS.length, 'Total Products'],['📏', topSize, 'Top Selling Size'],['🎨', topColor, 'Top Selling Color'],
+    ['🛍', PRODUCTS.length, 'Total Products'],['🏷️', BRANDS.length, 'Total Brands'],['📏', topSize, 'Top Selling Size'],['🎨', topColor, 'Top Selling Color'],
     ['🆕', newCustomers, 'New Customers (7d)'],['♻️', repeatCustomers, 'Repeat Customers'],['↩', totalReturns, hasFilter?'Returns (range)':'Total Returns'],
     ['🔄', piecesExchanged, hasFilter?'Pieces Exchanged, Store Returns (range)':'Pieces Exchanged (Store Returns)'],
   ];
@@ -5534,7 +6371,7 @@ function renderNotifications(){
     </div>`).join('') || '<div class="empty-note">No notifications yet.</div>';
   updateNotifBadge();
 }
-function iconFor(type){ return {order:'🛒',stock:'📦',review:'⭐',coupon:'🏷'}[type] || '🔔'; }
+function iconFor(type){ return {order:'🛒',stock:'📦',review:'⭐',coupon:'🏷',category:'🆕'}[type] || '🔔'; }
 async function markRead(id){ const n=NOTIFS.find(x=>x.id===id); if(n){ n.read=true; await setData('atlas:notifications', NOTIFS, true); renderNotifications(); } }
 async function markAllRead(){ NOTIFS.forEach(n=>n.read=true); await setData('atlas:notifications', NOTIFS, true); renderNotifications(); }
 
@@ -5549,7 +6386,6 @@ function renderSettingsForm(){
   document.getElementById('stFacebook').value = (s.social&&s.social.facebook) || '';
   document.getElementById('stTiktok').value = (s.social&&s.social.tiktok) || '';
   document.getElementById('stSnapchat').value = (s.social&&s.social.snapchat) || '';
-  document.getElementById('stRibbon').value = s.ribbon != null ? s.ribbon : 'FREE SHIPPING FOR LIMITED TIME · BUY 2 GET 10% OFF';
   document.getElementById('admLastLogin').textContent = s.lastLogin || '—';
   document.getElementById('stActiveSwitch').classList.toggle('on', s.active!==false);
   const prev = document.getElementById('stLogoPreview');
@@ -5614,7 +6450,6 @@ async function saveSettings(){
     tiers: currentLoyaltyTiersFromForm().filter(t=>t.points>0 && t.percent>0).sort((a,b)=>a.points-b.points)
   };
   SETTINGS.active = document.getElementById('stActiveSwitch').classList.contains('on');
-  SETTINGS.ribbon = document.getElementById('stRibbon').value.trim();
   if(window._stLogoData){ SETTINGS.logo = window._stLogoData; window._stLogoData = null; }
   await setData('atlas:settings', SETTINGS, true);
   applySettingsToStorefront();
@@ -5655,17 +6490,6 @@ function applySettingsToStorefront(){
   }
   const banner = document.getElementById('storeOfflineBanner');
   if(banner) banner.classList.toggle('hidden', s.active!==false || ADMIN_LOGGED_IN);
-  renderRibbon();
-}
-function renderRibbon(){
-  const s = SETTINGS || defaultSettings();
-  const track = document.getElementById('shipStripTrack');
-  if(!track) return;
-  const text = (s.ribbon || '').trim();
-  const strip = document.getElementById('shipStrip');
-  if(!text){ if(strip) strip.classList.add('hidden'); return; }
-  if(strip) strip.classList.remove('hidden');
-  track.innerHTML = `<span>${text}</span><span>${text}</span>`;
 }
 
 /* ================= DATA MANAGER ================= */
@@ -5684,10 +6508,12 @@ async function removeDataSection(section){
     returnrequests: async()=>{ RETURN_REQUESTS=[]; await setData('atlas:returnrequests', RETURN_REQUESTS, true); renderReturnRequestsAdmin(); },
     customers: async()=>{ CUSTOMERS=[]; await setData('atlas:customers', CUSTOMERS, true); renderCustomersTable(); },
     stats: async()=>{ STATS={visitorsByDay:{},salesByDay:{},ordersByDay:{}}; await setData('atlas:stats', STATS, true); },
-    banner: async()=>{ BANNER={image:null,sub:''}; BANNER_SLIDES=[]; await Promise.all([setData('atlas:banner', BANNER, true), setData('atlas:bannerslides', BANNER_SLIDES, true)]); renderBannerAdmin(); renderSlidesAdmin(); renderBanner(); renderSlidesBanner(); },
+    banner: async()=>{ BANNER={image:null,sub:''}; BANNER_SLIDES=[]; await Promise.all([setData('atlas:banner', BANNER, true), setData('atlas:bannerslides', BANNER_SLIDES, true)]); renderSlidesAdmin(); renderBanner(); renderSlidesBanner(); },
     shipping: async()=>{ SHIPPING=defaultShippingRates(); await setData('atlas:shipping', SHIPPING, true); renderShippingAdmin(); },
     coupons: async()=>{ COUPONS=[]; await setData('atlas:coupons', COUPONS, true); renderCouponsTable(); },
     categoryimages: async()=>{ CATEGORY_IMAGES={}; await setData('atlas:categoryimages', CATEGORY_IMAGES, true); renderCategoryImagesAdmin(); renderCategoryTiles(); },
+    circleitems: async()=>{ CIRCLE_ITEMS=[]; await setData('atlas:circleitems', CIRCLE_ITEMS, true); renderCircleItemsAdmin(); renderCircleItems(); },
+    categories: async()=>{ CATEGORIES=['تيشرت','شورت','جزم','كورة']; PENDING_CATEGORIES=[]; await Promise.all([setData('atlas:categories', CATEGORIES, true), setData('atlas:pendingcategories', PENDING_CATEGORIES, true)]); renderCategoryImagesAdmin(); renderCategoryTiles(); },
     cart: async()=>{ CART=[]; await setData('atlas:cart', CART, false); renderCart(); }
   };
   if(map[section]) await map[section]();
@@ -5696,7 +6522,7 @@ async function removeDataSection(section){
 async function removeAllData(){
   if(!confirmAdminPassword('Type your admin password to remove ALL data:')){ showToast('Incorrect password — cancelled'); return; }
   if(!confirm('This will permanently delete ALL store data — products, orders, returns, return requests, customers, statistics, banners, coupons and shipping. This cannot be undone. Continue?')) return;
-  for(const s of ['products','orders','returns','returnrequests','customers','stats','banner','shipping','coupons','cart','categoryimages']){
+  for(const s of ['products','orders','returns','returnrequests','customers','stats','banner','shipping','coupons','cart','categoryimages','categories','circleitems']){
     await removeDataSectionSilent(s);
   }
   showToast('All data removed');
@@ -5714,6 +6540,8 @@ async function removeDataSectionSilent(section){
     shipping: async()=>{ SHIPPING=defaultShippingRates(); await setData('atlas:shipping', SHIPPING, true); },
     coupons: async()=>{ COUPONS=[]; await setData('atlas:coupons', COUPONS, true); },
     categoryimages: async()=>{ CATEGORY_IMAGES={}; await setData('atlas:categoryimages', CATEGORY_IMAGES, true); },
+    circleitems: async()=>{ CIRCLE_ITEMS=[]; await setData('atlas:circleitems', CIRCLE_ITEMS, true); },
+    categories: async()=>{ CATEGORIES=['تيشرت','شورت','جزم','كورة']; PENDING_CATEGORIES=[]; await Promise.all([setData('atlas:categories', CATEGORIES, true), setData('atlas:pendingcategories', PENDING_CATEGORIES, true)]); },
     cart: async()=>{ CART=[]; await setData('atlas:cart', CART, false); }
   };
   if(map[section]) await map[section]();
@@ -5722,7 +6550,7 @@ async function removeDataSectionSilent(section){
 /* ================= BACKUP ================= */
 function exportBackup(){
   const backup = { exportedAt: new Date().toISOString(), products:PRODUCTS, orders:ORDERS, customers:CUSTOMERS,
-    coupons:COUPONS, notifications:NOTIFS, banner:BANNER, bannerslides:BANNER_SLIDES, stats:STATS, shipping:SHIPPING, settings:SETTINGS, sizeguides:SIZEGUIDES, categoryimages:CATEGORY_IMAGES, returns:RETURNS,
+    coupons:COUPONS, notifications:NOTIFS, banner:BANNER, bannerslides:BANNER_SLIDES, stats:STATS, shipping:SHIPPING, settings:SETTINGS, sizeguides:SIZEGUIDES, categoryimages:CATEGORY_IMAGES, categories:CATEGORIES, pendingcategories:PENDING_CATEGORIES, circleitems:CIRCLE_ITEMS, returns:RETURNS,
     academy:ACADEMY, privatetrainers:PRIVATE_TRAINERS, introslides:INTRO_SLIDES, hometiles:HOME_TILES };
   const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
@@ -5750,6 +6578,9 @@ function importBackup(e){
       if(data.settings) { SETTINGS = data.settings; await setData('atlas:settings', SETTINGS, true); }
       if(data.sizeguides) { SIZEGUIDES = data.sizeguides; await setData('atlas:sizeguides', SIZEGUIDES, true); }
       if(data.categoryimages) { CATEGORY_IMAGES = data.categoryimages; await setData('atlas:categoryimages', CATEGORY_IMAGES, true); }
+      if(data.categories) { CATEGORIES = data.categories; await setData('atlas:categories', CATEGORIES, true); }
+      if(data.pendingcategories) { PENDING_CATEGORIES = data.pendingcategories; await setData('atlas:pendingcategories', PENDING_CATEGORIES, true); }
+      if(data.circleitems) { CIRCLE_ITEMS = data.circleitems; await setData('atlas:circleitems', CIRCLE_ITEMS, true); }
       if(data.returns) { RETURNS = data.returns; await setData('atlas:returns', RETURNS, true); }
       if(data.academy) { ACADEMY = data.academy; await setData('atlas:academy', ACADEMY, true); }
       if(data.privatetrainers) { PRIVATE_TRAINERS = data.privatetrainers; await setData('atlas:privatetrainers', PRIVATE_TRAINERS, true); }
