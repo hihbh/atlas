@@ -33,6 +33,7 @@
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{background:#040404; color:var(--cream); font-family:'Jost',sans-serif; font-weight:300; -webkit-font-smoothing:antialiased;}
+body.scroll-locked{position:fixed; left:0; right:0; width:100%; overflow:hidden;}
 img{max-width:100%; display:block;}
 a{color:inherit; text-decoration:none;}
 button{font-family:inherit; cursor:pointer; border:none;}
@@ -48,6 +49,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--maroon-light);}
 html[dir="rtl"] body{font-family:'Tajawal',sans-serif;}
 html[dir="rtl"] .serif{font-family:'Tajawal',sans-serif; font-weight:600;}
 html[dir="rtl"] .pp-topbar > button:first-child{transform:scaleX(-1);}
+html[dir="rtl"] .store-back-btn{transform:scaleX(-1);}
 html[dir="rtl"] .ti svg{transform:scaleX(-1);}
 html[dir="rtl"] .search-result-item,
 html[dir="rtl"] .notif-item,
@@ -589,9 +591,30 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
 .pf-image-item img{width:100%; height:100%; object-fit:cover;}
 .pf-image-item .pf-img-remove{position:absolute; top:2px; right:2px; width:19px; height:19px; border-radius:50%; background:rgba(10,9,9,0.75); color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center;}
 .pf-image-item .pf-img-remove:hover{background:var(--danger);}
+.pf-image-item .pf-img-adjust{position:absolute; top:2px; left:2px; width:19px; height:19px; border-radius:50%; background:rgba(10,9,9,0.75); color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center;}
+.pf-image-item .pf-img-adjust:hover{background:var(--maroon-light); color:#0a0909;}
 .pf-image-item .pf-img-cover{position:absolute; bottom:0; left:0; right:0; background:rgba(161,49,72,0.85); color:#fff; font-size:8px; letter-spacing:.5px; text-align:center; padding:2px 0; text-transform:uppercase;}
 .pf-add-image{width:78px; height:96px; border:1px dashed var(--line); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:22px; color:var(--muted); cursor:pointer;}
 .pf-add-image:hover{border-color:var(--maroon-light); color:var(--maroon-light);}
+
+/* ---------- IMAGE CROP / POSITION MODAL ---------- */
+.crop-modal-overlay{position:fixed; inset:0; background:rgba(4,4,4,0.88); z-index:500; display:flex; align-items:center; justify-content:center; padding:20px;}
+.crop-modal-overlay.hidden{display:none;}
+.crop-modal{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; width:100%; max-width:380px; max-height:92vh; overflow-y:auto;}
+.crop-modal h3{font-family:'Cormorant SC',serif; font-size:20px; letter-spacing:2px; color:var(--cream); margin-bottom:4px;}
+.crop-modal p.crop-hint{font-size:11px; color:var(--muted); margin-bottom:14px; line-height:1.5;}
+.crop-frame{position:relative; width:100%; max-width:300px; aspect-ratio:3/4; margin:0 auto; overflow:hidden; border-radius:8px; border:1px solid var(--maroon-light); background:#1c1518; cursor:grab; touch-action:none; user-select:none;}
+.crop-frame.dragging{cursor:grabbing;}
+.crop-frame img{position:absolute; top:0; left:0; max-width:none; max-height:none; will-change:transform; pointer-events:none;}
+.crop-frame-grid{position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(245,245,243,0.18) 1px,transparent 1px),linear-gradient(90deg,rgba(245,245,243,0.18) 1px,transparent 1px); background-size:33.33% 33.33%;}
+.crop-zoom-row{display:flex; align-items:center; gap:10px; margin-top:16px;}
+.crop-zoom-row input[type=range]{flex:1; accent-color:var(--maroon-light); background:none; padding:0; border:none;}
+.crop-zoom-row span{font-size:14px; color:var(--muted); width:18px; text-align:center;}
+.crop-modal-actions{display:flex; gap:10px; margin-top:18px;}
+.crop-modal-actions button{flex:1; padding:11px; border-radius:8px; font-size:13px; letter-spacing:.5px;}
+.crop-btn-cancel{background:var(--bg-alt); color:var(--muted); border:1px solid var(--line) !important;}
+.crop-btn-confirm{background:var(--maroon); color:#fff;}
+.crop-btn-confirm:hover{background:var(--maroon-light);}
 
 /* Size Guides admin */
 .sg-row{display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid var(--line);}
@@ -657,8 +680,11 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
 .prog-type-tabs button{flex:1; padding:12px; border:1px solid var(--line); border-radius:8px; background:var(--panel); color:var(--muted); font-size:13px; letter-spacing:1.5px; text-transform:uppercase;}
 .prog-type-tabs button.active{border-color:var(--maroon-light); color:var(--cream); background:rgba(200,155,74,0.1);}
 .trainer-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:0 16px 24px;}
-.trainer-card{background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; cursor:pointer;}
+.trainer-card{background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; cursor:pointer; position:relative;}
 .trainer-card img{width:100%; aspect-ratio:1/1; object-fit:cover; filter:grayscale(.15);}
+.tc-soon-badge{position:absolute; top:8px; left:8px; z-index:2; background:var(--maroon); color:#fff; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; padding:4px 9px; border-radius:20px; box-shadow:0 2px 8px rgba(0,0,0,.4);}
+html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
+.trainer-detail-soon-note{background:rgba(140,107,46,0.15); border:1px solid var(--maroon); color:var(--maroon-light); font-size:12px; letter-spacing:.5px; text-align:center; padding:12px; border-radius:8px; margin-top:16px;}
 .trainer-card .tc-body{padding:10px;}
 .trainer-card .tc-name{font-size:13px; color:var(--cream); font-weight:500;}
 .trainer-card .tc-type{font-size:10px; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-top:2px;}
@@ -755,6 +781,7 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
 <div id="store">
   <header class="site-header">
     <div class="header-pill">
+      <button class="icon-btn store-back-btn" onclick="openProgramChoose()" aria-label="Back" title="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path></svg></button>
       <button class="icon-btn" onclick="openMenu()">☰</button>
       <div class="logo" id="headerLogo">ATLAS</div>
       <div class="header-side">
@@ -1155,6 +1182,7 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
       </div>
       <div class="form-actions">
         <button class="btn" onclick="saveBannerText()">Save Text</button>
+        <button class="btn secondary" onclick="adjustBannerImage()">Adjust Image</button>
         <button class="btn danger" onclick="removeBannerImage()">Remove Image</button>
       </div>
 
@@ -1477,6 +1505,7 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
           <div class="private-photo-row">
             <img id="htPreview_store" class="trainer-admin-thumb hidden" src=""><div id="htEmpty_store" class="trainer-admin-thumb-empty"></div>
             <button type="button" class="btn small secondary" onclick="document.getElementById('homeTileFile_store').click()">Upload</button>
+            <button type="button" class="btn small secondary" onclick="adjustHomeTile('store')">Adjust</button>
           </div>
           <input type="file" id="homeTileFile_store" accept="image/*" class="hidden">
           <input id="htTitle_store" placeholder="Title" style="width:100%; margin-top:8px;" onchange="saveHomeTileText('store')">
@@ -1486,6 +1515,7 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
           <div class="private-photo-row">
             <img id="htPreview_academy" class="trainer-admin-thumb hidden" src=""><div id="htEmpty_academy" class="trainer-admin-thumb-empty"></div>
             <button type="button" class="btn small secondary" onclick="document.getElementById('homeTileFile_academy').click()">Upload</button>
+            <button type="button" class="btn small secondary" onclick="adjustHomeTile('academy')">Adjust</button>
           </div>
           <input type="file" id="homeTileFile_academy" accept="image/*" class="hidden">
           <input id="htTitle_academy" placeholder="Title" style="width:100%; margin-top:8px;" onchange="saveHomeTileText('academy')">
@@ -1495,6 +1525,7 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
           <div class="private-photo-row">
             <img id="htPreview_camp" class="trainer-admin-thumb hidden" src=""><div id="htEmpty_camp" class="trainer-admin-thumb-empty"></div>
             <button type="button" class="btn small secondary" onclick="document.getElementById('homeTileFile_camp').click()">Upload</button>
+            <button type="button" class="btn small secondary" onclick="adjustHomeTile('camp')">Adjust</button>
           </div>
           <input type="file" id="homeTileFile_camp" accept="image/*" class="hidden">
           <input id="htTitle_camp" placeholder="Title" style="width:100%; margin-top:8px;" onchange="saveHomeTileText('camp')">
@@ -1504,6 +1535,7 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
           <div class="private-photo-row">
             <img id="htPreview_private" class="trainer-admin-thumb hidden" src=""><div id="htEmpty_private" class="trainer-admin-thumb-empty"></div>
             <button type="button" class="btn small secondary" onclick="document.getElementById('homeTileFile_private').click()">Upload</button>
+            <button type="button" class="btn small secondary" onclick="adjustHomeTile('private')">Adjust</button>
           </div>
           <input type="file" id="homeTileFile_private" accept="image/*" class="hidden">
           <input id="htTitle_private" placeholder="Title" style="width:100%; margin-top:8px;" onchange="saveHomeTileText('private')">
@@ -1562,6 +1594,7 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
               <img id="tfPhotoPreview" class="trainer-admin-thumb hidden" src="">
               <div id="tfPhotoEmpty" class="trainer-admin-thumb-empty"></div>
               <button type="button" class="btn small secondary" onclick="document.getElementById('trainerPhotoFile').click()">Upload Photo</button>
+              <button type="button" class="btn small secondary" onclick="adjustTrainerPhoto()">Adjust</button>
             </div>
             <input type="file" id="trainerPhotoFile" accept="image/*" class="hidden">
           </div>
@@ -1572,6 +1605,10 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
           <div class="full"><label>Session Details</label><textarea id="tfSession" style="width:100%; min-height:60px;" placeholder="Days, times, duration, age group..."></textarea></div>
           <div class="full"><label>Location Link (optional)</label><input id="tfLocation" placeholder="https://maps.google.com/..."></div>
           <div><label>Trainer's WhatsApp Number</label><input id="tfWhatsapp" placeholder="e.g. 201000000000"></div>
+          <div class="full" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="tfSoon" style="width:auto; accent-color:var(--maroon-light);">
+            <label for="tfSoon" style="margin:0; cursor:pointer;">Coming Soon (shows a "Soon" tag and disables booking on this trainer's page)</label>
+          </div>
         </div>
         <div class="form-actions">
           <button class="btn" onclick="saveTrainer()">Save Trainer</button>
@@ -1604,6 +1641,7 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
               <img id="ptfPhotoPreview" class="trainer-admin-thumb hidden" src="">
               <div id="ptfPhotoEmpty" class="trainer-admin-thumb-empty"></div>
               <button type="button" class="btn small secondary" onclick="document.getElementById('privateTrainerPhotoFile').click()">Upload Photo</button>
+              <button type="button" class="btn small secondary" onclick="adjustPrivateTrainerPhoto()">Adjust</button>
             </div>
             <input type="file" id="privateTrainerPhotoFile" accept="image/*" class="hidden">
           </div>
@@ -1613,6 +1651,10 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
           <div class="full"><label>Session Details / Package</label><textarea id="ptfSession" style="width:100%; min-height:60px;" placeholder="Everything the customer should know except price — days, times, duration, what's included..."></textarea></div>
           <div class="full"><label>Location Link (optional)</label><input id="ptfLocation" placeholder="https://maps.google.com/..."></div>
           <div><label>Trainer's WhatsApp Number</label><input id="ptfWhatsapp" placeholder="e.g. 201000000000"><div style="font-size:11px; color:var(--muted); margin-top:4px;">Include country code, no + or leading 0. "Book Now" opens a WhatsApp chat directly to this number.</div></div>
+          <div class="full" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="ptfSoon" style="width:auto; accent-color:var(--maroon-light);">
+            <label for="ptfSoon" style="margin:0; cursor:pointer;">Coming Soon (shows a "Soon" tag and disables booking on this trainer's page)</label>
+          </div>
         </div>
         <div class="form-actions">
           <button class="btn" onclick="savePrivateTrainer()">Save Trainer</button>
@@ -2475,6 +2517,25 @@ function navigateTo(view, extra){
   applyRoute(state);
 }
 function goBack(){ history.back(); }
+/* Overlays (product page, cart, academy/private detail, admin, etc.) are position:fixed
+   panels that sit above the store, but on mobile a fixed panel doesn't stop the page
+   behind it from also scrolling (rubber-band/scroll-chaining) — so scrolling inside an
+   open overlay used to visibly drag the store page underneath. Locking the body itself
+   whenever anything other than the base "home" view is showing fixes that, and restores
+   the exact scroll position once the visitor is back on the store page. */
+function syncBodyScrollLock(view){
+  const shouldLock = (view && view !== 'home');
+  const locked = document.body.classList.contains('scroll-locked');
+  if(shouldLock && !locked){
+    window._savedScrollY = window.scrollY || window.pageYOffset || 0;
+    document.body.classList.add('scroll-locked');
+    document.body.style.top = (-window._savedScrollY) + 'px';
+  } else if(!shouldLock && locked){
+    document.body.classList.remove('scroll-locked');
+    document.body.style.top = '';
+    window.scrollTo(0, window._savedScrollY || 0);
+  }
+}
 function hideAllOverlays(){
   ['menuOverlay','productOverlay','categoryOverlay','cartOverlay','wishlistOverlay','accountOverlay','returnOverlay','checkoutOverlay','trackOrderOverlay','orderConfirmOverlay','programChooseOverlay','academyOverlay','academyDetailOverlay','privateOverlay','privateDetailOverlay','trainerBookingOverlay'].forEach(id=>{
     const el = document.getElementById(id); if(el) el.classList.add('hidden');
@@ -2597,7 +2658,8 @@ function applyRoute(state){
     case 'trainerbooking': {
       const list = (state.kind==='coach' || state.kind==='goalkeeper' || state.kind==='fitness') ? PRIVATE_TRAINERS : ACADEMY;
       const t = list.find(x=>x.id===state.id);
-      if(t){ openTrainerBookingForm(t); document.getElementById('trainerBookingOverlay').classList.remove('hidden'); }
+      if(t && t.soon){ showToast(LANG==='ar' ? 'الحجز لسه مش متاح لهذا المدرب' : 'Booking isn\'t open for this trainer yet'); history.back(); }
+      else if(t){ openTrainerBookingForm(t); document.getElementById('trainerBookingOverlay').classList.remove('hidden'); }
       else { history.back(); }
       break;
     }
@@ -2605,6 +2667,7 @@ function applyRoute(state){
     default:
       break; // all overlays already hidden above — nothing else to do
   }
+  syncBodyScrollLock(state.view);
 }
 /* Turns the URL hash the page was loaded with (e.g. "#!product/abc123" from a shared
    link) into a router state, so a shared link actually opens that product instead of
@@ -3928,9 +3991,17 @@ function renderPfImagesGrid(){
   grid.innerHTML = imgs.map((src,i)=>`
     <div class="pf-image-item">
       <img src="${src}">
+      <button type="button" class="pf-img-adjust" onclick="adjustPfImage(${i})" title="${LANG==='ar'?'ظبط الصورة':'Adjust image'}">✎</button>
       <button type="button" class="pf-img-remove" onclick="removePfImage(${i})">✕</button>
       ${i===0?'<div class="pf-img-cover">Cover</div>':''}
     </div>`).join('') + `<div class="pf-add-image" onclick="document.getElementById('pfImageFile').click()">+</div>`;
+}
+function adjustPfImage(i){
+  const src = (window._pfImages||[])[i];
+  adjustExistingImage(src, 3/4, (result)=>{ // matches .card .imgwrap
+    window._pfImages[i] = result;
+    renderPfImagesGrid();
+  });
 }
 function removePfImage(i){
   window._pfImages.splice(i,1);
@@ -3971,12 +4042,11 @@ function compressImageFile(file, maxDim, quality){
 async function onProductFileChange(e){
   const files = Array.from(e.target.files || []); if(!files.length) return;
   window._pfImages = window._pfImages || [];
-  for(const file of files){
-    const compressed = await compressImageFile(file, 1000, 0.72);
-    if(compressed) window._pfImages.push(compressed);
-  }
-  renderPfImagesGrid();
   e.target.value = '';
+  startImageCropQueue(files, 3/4, (croppedResults)=>{ // matches .card .imgwrap on the store grid
+    croppedResults.forEach(src => window._pfImages.push(src));
+    renderPfImagesGrid();
+  });
 }
 async function saveProduct(){
   const name = document.getElementById('pfName').value.trim();
@@ -4051,15 +4121,25 @@ function renderBannerAdmin(){
   document.getElementById('bnSub').value = BANNER.sub || '';
 }
 async function onBannerFileChange(e){
-  const file = e.target.files[0]; if(!file) return;
-  const compressed = await compressImageFile(file, 1600, 0.75);
-  if(!compressed) return;
-  BANNER.image = compressed;
-  await setData('atlas:banner', BANNER, true);
-  renderBannerAdmin(); renderBanner();
-  showToast('Banner image updated');
+  const file = e.target.files[0]; e.target.value=''; if(!file) return;
+  startImageCropQueue([file], 2/1, async (results)=>{ // matches .banner-admin-preview (16:8)
+    if(!results.length) return;
+    BANNER.image = results[0];
+    await setData('atlas:banner', BANNER, true);
+    renderBannerAdmin(); renderBanner();
+    showToast('Banner image updated');
+  });
 }
 async function removeBannerImage(){ BANNER.image = null; await setData('atlas:banner', BANNER, true); renderBannerAdmin(); renderBanner(); showToast('Banner image removed'); }
+function adjustBannerImage(){
+  if(!BANNER.image){ showToast(LANG==='ar'?'مفيش صورة بانر لسه':'No banner image yet'); return; }
+  adjustExistingImage(BANNER.image, 2/1, async (result)=>{ // matches .banner-admin-preview (16:8)
+    BANNER.image = result;
+    await setData('atlas:banner', BANNER, true);
+    renderBannerAdmin(); renderBanner();
+    showToast('Banner image updated');
+  });
+}
 async function saveBannerText(){
   BANNER.sub = document.getElementById('bnSub').value.trim();
   await setData('atlas:banner', BANNER, true);
@@ -4074,22 +4154,32 @@ function renderSlidesAdmin(){
   list.innerHTML = (BANNER_SLIDES||[]).map((src,i)=>`
     <div style="position:relative; width:110px; height:70px; border-radius:6px; overflow:hidden; border:1px solid var(--line);">
       <img src="${src}" style="width:100%; height:100%; object-fit:cover;">
+      <button onclick="adjustSlideImage(${i})" title="${LANG==='ar'?'ظبط الصورة':'Adjust'}" style="position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:rgba(10,9,9,0.75); color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center;">✎</button>
       <button onclick="removeSlide(${i})" title="Remove" style="position:absolute; top:3px; right:3px; width:20px; height:20px; border-radius:50%; background:rgba(10,9,9,0.75); color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center;">✕</button>
     </div>
   `).join('') || '<div class="empty-note">No slides added yet.</div>';
 }
+async function adjustSlideImage(i){
+  const src = (BANNER_SLIDES||[])[i];
+  adjustExistingImage(src, 1.2, async (result)=>{ // approximates the header banner frame (.banner)
+    BANNER_SLIDES[i] = result;
+    await setData('atlas:bannerslides', BANNER_SLIDES, true);
+    renderSlidesAdmin();
+    renderSlidesBanner();
+    showToast('Slide updated');
+  });
+}
 async function onSlidesFileChange(e){
   const files = Array.from(e.target.files||[]);
-  if(!files.length) return;
-  for(const file of files){
-    const compressed = await compressImageFile(file, 1600, 0.75);
-    if(compressed) BANNER_SLIDES.push(compressed);
-  }
   e.target.value = '';
-  await setData('atlas:bannerslides', BANNER_SLIDES, true);
-  renderSlidesAdmin();
-  renderSlidesBanner();
-  showToast('Slide(s) added');
+  if(!files.length) return;
+  startImageCropQueue(files, 1.2, async (results)=>{ // approximates the header banner frame (.banner)
+    results.forEach(src => BANNER_SLIDES.push(src));
+    await setData('atlas:bannerslides', BANNER_SLIDES, true);
+    renderSlidesAdmin();
+    renderSlidesBanner();
+    showToast('Slide(s) added');
+  });
 }
 async function removeSlide(i){
   BANNER_SLIDES.splice(i,1);
@@ -4510,27 +4600,39 @@ function renderCategoryImagesAdmin(){
       </div>
       <div class="sg-actions">
         <button class="btn small secondary" onclick="triggerCategoryImageUpload('${safeCat}')">${img?'Replace':'Upload'}</button>
+        ${img ? `<button class="btn small secondary" onclick="adjustCategoryImage('${safeCat}')">Adjust</button>` : ''}
         ${img ? `<button class="btn small danger" onclick="removeCategoryImage('${safeCat}')">Remove</button>` : ''}
       </div>
     </div>`;
   }).join('') : '<div class="empty-note">Add products with a category first — an image slot appears here for each category.</div>';
+}
+async function adjustCategoryImage(category){
+  const src = CATEGORY_IMAGES[category];
+  if(!src) return;
+  adjustExistingImage(src, 1/1, async (result)=>{ // matches .cat-tile (square)
+    CATEGORY_IMAGES[category] = result;
+    await setData('atlas:categoryimages', CATEGORY_IMAGES, true);
+    renderCategoryImagesAdmin();
+    renderCategoryTiles();
+    showToast('Category image updated');
+  });
 }
 function triggerCategoryImageUpload(category){
   window._ciUploadCategory = category;
   document.getElementById('categoryImageFile').click();
 }
 async function onCategoryImageFileChange(e){
-  const file = e.target.files[0]; if(!file) return;
-  const category = window._ciUploadCategory;
+  const file = e.target.files[0]; const category = window._ciUploadCategory;
   e.target.value = '';
-  if(!category) return;
-  const compressed = await compressImageFile(file, 900, 0.8);
-  if(!compressed) return;
-  CATEGORY_IMAGES[category] = compressed;
-  await setData('atlas:categoryimages', CATEGORY_IMAGES, true);
-  renderCategoryImagesAdmin();
-  renderCategoryTiles();
-  showToast('Category image saved for ' + category);
+  if(!file || !category) return;
+  startImageCropQueue([file], 1/1, async (results)=>{ // matches .cat-tile (square)
+    if(!results.length) return;
+    CATEGORY_IMAGES[category] = results[0];
+    await setData('atlas:categoryimages', CATEGORY_IMAGES, true);
+    renderCategoryImagesAdmin();
+    renderCategoryTiles();
+    showToast('Category image saved for ' + category);
+  });
 }
 async function removeCategoryImage(category){
   delete CATEGORY_IMAGES[category];
@@ -4634,6 +4736,7 @@ function renderAcademyList(){
   const list = ACADEMY.filter(t=>t.type===currentAcademyType);
   grid.innerHTML = list.length ? list.map(t=>`
     <div class="trainer-card" onclick="navigateTo('academydetail', {id:'${t.id}'})">
+      ${t.soon ? `<div class="tc-soon-badge">${LANG==='ar'?'قريباً':'Soon'}</div>` : ''}
       <img src="${t.photo || 'https://placehold.co/300x300/181614/8f8f8f?text=ATLAS'}">
       <div class="tc-body">
         <div class="tc-name">${t.name}</div>
@@ -4655,11 +4758,16 @@ function renderTrainerDetail(t, containerId){
   const isPrivate = containerId==='privateDetailContent';
   if(isPrivate) window._currentPrivateTrainerDetail = t;
   else window._currentTrainerDetail = t;
-  const bookBtn = isPrivate
-    ? `<button class="btn" style="width:100%; margin-top:16px;" onclick="bookPrivateTrainerWhatsApp('${t.id}')">💬 Book Now</button>`
-    : `<button class="btn" style="width:100%; margin-top:16px;" onclick="navigateTo('trainerbooking', {id:'${t.id}', kind:'${t.type}'})">Book a Session</button>`;
+  const bookBtn = t.soon
+    ? `<button class="btn" style="width:100%; margin-top:16px; opacity:.5; cursor:not-allowed;" disabled>${LANG==='ar'?'قريباً':'Coming Soon'}</button>`
+    : (isPrivate
+      ? `<button class="btn" style="width:100%; margin-top:16px;" onclick="bookPrivateTrainerWhatsApp('${t.id}')">💬 Book Now</button>`
+      : `<button class="btn" style="width:100%; margin-top:16px;" onclick="navigateTo('trainerbooking', {id:'${t.id}', kind:'${t.type}'})">Book a Session</button>`);
   document.getElementById(containerId).innerHTML = `
-    <img class="trainer-detail-hero" src="${t.photo || 'https://placehold.co/600x450/181614/8f8f8f?text=ATLAS'}">
+    <div style="position:relative;">
+      ${t.soon ? `<div class="tc-soon-badge">${LANG==='ar'?'قريباً':'Soon'}</div>` : ''}
+      <img class="trainer-detail-hero" src="${t.photo || 'https://placehold.co/600x450/181614/8f8f8f?text=ATLAS'}">
+    </div>
     <div class="trainer-detail-body">
       <h2>${t.name}</h2>
       <div class="tc-type">${trainerTypeLabel(t.type)}</div>
@@ -4671,6 +4779,7 @@ function renderTrainerDetail(t, containerId){
       ${t.bio ? `<div class="trainer-detail-section"><h4>About</h4><p>${t.bio}</p></div>` : ''}
       ${t.session ? `<div class="trainer-detail-section"><h4>${isPrivate?'Package Details':'Session Details'}</h4><p>${t.session}</p></div>` : ''}
       ${bookBtn}
+      ${t.soon ? `<div class="trainer-detail-soon-note">${LANG==='ar'?'الحجز هيتفتح قريباً لهذا المدرب.':'Booking for this trainer will open soon.'}</div>` : ''}
       ${t.location ? `<button class="location-btn" onclick="window.open('${t.location}','_blank')">📍 View Location</button>` : ''}
     </div>`;
 }
@@ -4680,6 +4789,7 @@ function renderTrainerDetail(t, containerId){
 function bookPrivateTrainerWhatsApp(trainerId){
   const t = PRIVATE_TRAINERS.find(x=>x.id===trainerId);
   if(!t){ return; }
+  if(t.soon){ showToast(LANG==='ar' ? 'الحجز لسه مش متاح لهذا المدرب' : 'Booking isn\'t open for this trainer yet'); return; }
   if(!t.whatsapp){ showToast('This trainer has no WhatsApp number set up yet'); return; }
   const msg = `Hi ${t.name}, I'd like to book a session with you through the ATLAS app.`;
   window.open(`https://wa.me/${waNumber(t.whatsapp)}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -4702,6 +4812,7 @@ function renderPrivateList(){
   const list = PRIVATE_TRAINERS.filter(t=>t.type===currentPrivateType);
   grid.innerHTML = list.length ? list.map(t=>`
     <div class="trainer-card" onclick="navigateTo('privatedetail', {id:'${t.id}'})">
+      ${t.soon ? `<div class="tc-soon-badge">${LANG==='ar'?'قريباً':'Soon'}</div>` : ''}
       <img src="${t.photo || 'https://placehold.co/300x300/181614/8f8f8f?text=ATLAS'}">
       <div class="tc-body">
         <div class="tc-name">${t.name}</div>
@@ -4802,7 +4913,7 @@ function renderAcademyAdminTable(){
   tbody.innerHTML = ACADEMY.length ? ACADEMY.map(t=>`
     <tr>
       <td>${t.photo ? `<img class="trainer-admin-thumb" src="${t.photo}">` : `<div class="trainer-admin-thumb-empty"></div>`}</td>
-      <td>${t.name}</td>
+      <td>${t.name}${t.soon ? ' <span class="type-pill" style="background:var(--maroon); color:#fff;">Soon</span>' : ''}</td>
       <td><span class="type-pill">${trainerTypeLabel(t.type)}</span></td>
       <td>${trainerBookingCount(t.id)}</td>
       <td class="row-actions">
@@ -4826,6 +4937,7 @@ function openTrainerForm(id){
     document.getElementById('tfSession').value = t.session || '';
     document.getElementById('tfLocation').value = t.location || '';
     document.getElementById('tfWhatsapp').value = t.whatsapp || '';
+    document.getElementById('tfSoon').checked = !!t.soon;
     window._tfPhoto = t.photo || null;
   } else {
     document.getElementById('tfName').value = '';
@@ -4837,6 +4949,7 @@ function openTrainerForm(id){
     document.getElementById('tfSession').value = '';
     document.getElementById('tfLocation').value = '';
     document.getElementById('tfWhatsapp').value = '';
+    document.getElementById('tfSoon').checked = false;
     window._tfPhoto = null;
   }
   renderTrainerPhotoPreview();
@@ -4850,10 +4963,18 @@ function renderTrainerPhotoPreview(){
 }
 async function onTrainerFileChange(e){
   const file = e.target.files[0]; e.target.value=''; if(!file) return;
-  const compressed = await compressImageFile(file, 900, 0.8);
-  if(!compressed) return;
-  window._tfPhoto = compressed;
-  renderTrainerPhotoPreview();
+  startImageCropQueue([file], 1/1, (results)=>{ // matches .trainer-card (square listing)
+    if(!results.length) return;
+    window._tfPhoto = results[0];
+    renderTrainerPhotoPreview();
+  });
+}
+function adjustTrainerPhoto(){
+  if(!window._tfPhoto){ showToast(LANG==='ar'?'ارفع صورة الأول':'Upload a photo first'); return; }
+  adjustExistingImage(window._tfPhoto, 1/1, (result)=>{
+    window._tfPhoto = result;
+    renderTrainerPhotoPreview();
+  });
 }
 async function saveTrainer(){
   const name = document.getElementById('tfName').value.trim();
@@ -4870,6 +4991,7 @@ async function saveTrainer(){
     session: document.getElementById('tfSession').value.trim(),
     location: document.getElementById('tfLocation').value.trim(),
     whatsapp: document.getElementById('tfWhatsapp').value.trim(),
+    soon: document.getElementById('tfSoon').checked,
   };
   if(editingTrainerId){
     const idx = ACADEMY.findIndex(x=>x.id===editingTrainerId);
@@ -4897,7 +5019,7 @@ function renderPrivateAdminTable(){
   tbody.innerHTML = PRIVATE_TRAINERS.length ? PRIVATE_TRAINERS.map(t=>`
     <tr>
       <td>${t.photo ? `<img class="trainer-admin-thumb" src="${t.photo}">` : `<div class="trainer-admin-thumb-empty"></div>`}</td>
-      <td>${t.name}</td>
+      <td>${t.name}${t.soon ? ' <span class="type-pill" style="background:var(--maroon); color:#fff;">Soon</span>' : ''}</td>
       <td><span class="type-pill">${trainerTypeLabel(t.type)}</span></td>
       <td>${t.whatsapp ? `<code>${t.whatsapp}</code>` : '<span class="empty-note">—</span>'}</td>
       <td class="row-actions">
@@ -4920,6 +5042,7 @@ function openPrivateTrainerForm(id){
     document.getElementById('ptfSession').value = t.session || '';
     document.getElementById('ptfLocation').value = t.location || '';
     document.getElementById('ptfWhatsapp').value = t.whatsapp || '';
+    document.getElementById('ptfSoon').checked = !!t.soon;
     window._pfPhoto = t.photo || null;
   } else {
     document.getElementById('ptfName').value = '';
@@ -4930,6 +5053,7 @@ function openPrivateTrainerForm(id){
     document.getElementById('ptfSession').value = '';
     document.getElementById('ptfLocation').value = '';
     document.getElementById('ptfWhatsapp').value = '';
+    document.getElementById('ptfSoon').checked = false;
     window._pfPhoto = null;
   }
   renderPrivateTrainerPhotoPreview();
@@ -4943,10 +5067,18 @@ function renderPrivateTrainerPhotoPreview(){
 }
 async function onPrivateTrainerFileChange(e){
   const file = e.target.files[0]; e.target.value=''; if(!file) return;
-  const compressed = await compressImageFile(file, 900, 0.8);
-  if(!compressed) return;
-  window._pfPhoto = compressed;
-  renderPrivateTrainerPhotoPreview();
+  startImageCropQueue([file], 1/1, (results)=>{ // matches .trainer-card (square listing)
+    if(!results.length) return;
+    window._pfPhoto = results[0];
+    renderPrivateTrainerPhotoPreview();
+  });
+}
+function adjustPrivateTrainerPhoto(){
+  if(!window._pfPhoto){ showToast(LANG==='ar'?'ارفع صورة الأول':'Upload a photo first'); return; }
+  adjustExistingImage(window._pfPhoto, 1/1, (result)=>{
+    window._pfPhoto = result;
+    renderPrivateTrainerPhotoPreview();
+  });
 }
 async function savePrivateTrainer(){
   const name = document.getElementById('ptfName').value.trim();
@@ -4962,6 +5094,7 @@ async function savePrivateTrainer(){
     session: document.getElementById('ptfSession').value.trim(),
     location: document.getElementById('ptfLocation').value.trim(),
     whatsapp: document.getElementById('ptfWhatsapp').value.trim(),
+    soon: document.getElementById('ptfSoon').checked,
   };
   if(editingPrivateTrainerId){
     const idx = PRIVATE_TRAINERS.findIndex(x=>x.id===editingPrivateTrainerId);
@@ -5006,14 +5139,26 @@ async function saveHomeTileText(key){
 }
 async function onHomeTileFileChange(e, key){
   const file = e.target.files[0]; e.target.value=''; if(!file) return;
-  const compressed = await compressImageFile(file, 700, 0.8);
-  if(!compressed) return;
-  HOME_TILES = HOME_TILES || {};
-  HOME_TILES[key] = compressed;
-  await setData('atlas:hometiles', HOME_TILES, true);
-  renderHomeTilesAdmin();
-  renderHomeTiles();
-  showToast('Tile image updated');
+  startImageCropQueue([file], 1/1, async (results)=>{ // matches .pc-tile-img (square)
+    if(!results.length) return;
+    HOME_TILES = HOME_TILES || {};
+    HOME_TILES[key] = results[0];
+    await setData('atlas:hometiles', HOME_TILES, true);
+    renderHomeTilesAdmin();
+    renderHomeTiles();
+    showToast('Tile image updated');
+  });
+}
+function adjustHomeTile(key){
+  const src = HOME_TILES && HOME_TILES[key];
+  if(!src){ showToast(LANG==='ar'?'ارفع صورة الأول':'Upload a photo first'); return; }
+  adjustExistingImage(src, 1/1, async (result)=>{
+    HOME_TILES[key] = result;
+    await setData('atlas:hometiles', HOME_TILES, true);
+    renderHomeTilesAdmin();
+    renderHomeTiles();
+    showToast('Tile image updated');
+  });
 }
 function renderIntroSlidesAdmin(){
   const tbody = document.getElementById('introSlidesTable');
@@ -5622,7 +5767,199 @@ function updateNotifBadge(){
   b.textContent = unread; b.classList.toggle('hidden', unread===0);
 }
 
+/* ================= IMAGE CROP / POSITION TOOL =================
+   Lets the admin pick exactly how an uploaded photo sits inside the
+   product-card frame (3:4) instead of it being auto-cropped. The
+   admin drags to reposition and uses the slider to zoom, then the
+   visible area is baked into a real cropped image via canvas. */
+let _cropRatio = 3/4;       // current width/height target, set per call site
+let _cropQueue = [];        // files still waiting to be cropped
+let _cropResults = [];      // finished cropped dataURLs for this batch
+let _cropOnDone = null;     // callback(results[]) once whole batch finishes
+let _cropState = null;      // {natW,natH,scale,minScale,x,y,dragging,lastX,lastY}
+
+/* ratio = width/height that the frame should display at, matching wherever
+   this photo ends up shown on the actual site (see comments at each call site) */
+function startImageCropQueue(files, ratio, onDone){
+  _cropRatio = ratio || 3/4;
+  document.getElementById('cropFrame').style.aspectRatio = _cropRatio;
+  _cropQueue = Array.from(files || []);
+  _cropResults = [];
+  _cropOnDone = onDone;
+  processNextCropItem();
+}
+function processNextCropItem(){
+  if(!_cropQueue.length){
+    document.getElementById('cropModalOverlay').classList.add('hidden');
+    const results = _cropResults.slice();
+    _cropResults = [];
+    if(_cropOnDone) _cropOnDone(results);
+    _cropOnDone = null;
+    return;
+  }
+  const item = _cropQueue.shift();
+  if(typeof item === 'string'){
+    // Re-adjusting an image already saved (dataURL or URL) rather than a fresh upload.
+    openCropModal(item);
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = ()=> openCropModal(reader.result);
+  reader.onerror = ()=> processNextCropItem();
+  reader.readAsDataURL(item);
+}
+/* Re-open the crop tool on a single already-saved image (from an edit form) so the
+   admin can reposition/re-crop it without having to re-upload the photo from scratch. */
+function adjustExistingImage(src, ratio, onDone){
+  if(!src) return;
+  startImageCropQueue([src], ratio, (results)=>{
+    if(results && results.length) onDone(results[0]);
+  });
+}
+function openCropModal(dataUrl){
+  const overlay = document.getElementById('cropModalOverlay');
+  const img = document.getElementById('cropImg');
+  const frame = document.getElementById('cropFrame');
+  const slider = document.getElementById('cropZoomSlider');
+  overlay.classList.remove('hidden');
+  slider.value = 100;
+  img.crossOrigin = 'anonymous';
+  img.onload = ()=>{
+    const frameRect = frame.getBoundingClientRect();
+    const natW = img.naturalWidth, natH = img.naturalHeight;
+    // minScale = smallest scale where the image still fully covers the frame
+    const minScale = Math.max(frameRect.width / natW, frameRect.height / natH);
+    _cropState = {
+      natW, natH, minScale,
+      scale: minScale,
+      x: (frameRect.width - natW*minScale)/2,
+      y: (frameRect.height - natH*minScale)/2,
+      dragging:false, lastX:0, lastY:0
+    };
+    applyCropTransform();
+  };
+  img.src = dataUrl;
+}
+function applyCropTransform(){
+  const img = document.getElementById('cropImg');
+  const s = _cropState;
+  if(!s) return;
+  img.style.width = (s.natW*s.scale)+'px';
+  img.style.height = (s.natH*s.scale)+'px';
+  img.style.transform = `translate(${s.x}px, ${s.y}px)`;
+}
+function clampCropPosition(){
+  const frame = document.getElementById('cropFrame');
+  const s = _cropState; if(!s) return;
+  const frameRect = frame.getBoundingClientRect();
+  const w = s.natW*s.scale, h = s.natH*s.scale;
+  const minX = frameRect.width - w, maxX = 0;
+  const minY = frameRect.height - h, maxY = 0;
+  s.x = Math.min(maxX, Math.max(minX, s.x));
+  s.y = Math.min(maxY, Math.max(minY, s.y));
+}
+function cropPointerDown(e){
+  const s = _cropState; if(!s) return;
+  const p = e.touches ? e.touches[0] : e;
+  s.dragging = true; s.lastX = p.clientX; s.lastY = p.clientY;
+  document.getElementById('cropFrame').classList.add('dragging');
+}
+function cropPointerMove(e){
+  const s = _cropState; if(!s || !s.dragging) return;
+  const p = e.touches ? e.touches[0] : e;
+  const dx = p.clientX - s.lastX, dy = p.clientY - s.lastY;
+  s.lastX = p.clientX; s.lastY = p.clientY;
+  s.x += dx; s.y += dy;
+  clampCropPosition();
+  applyCropTransform();
+  if(e.cancelable) e.preventDefault();
+}
+function cropPointerUp(){
+  const s = _cropState; if(!s) return;
+  s.dragging = false;
+  document.getElementById('cropFrame').classList.remove('dragging');
+}
+function cropZoomChange(e){
+  const s = _cropState; if(!s) return;
+  const frame = document.getElementById('cropFrame');
+  const frameRect = frame.getBoundingClientRect();
+  const oldScale = s.scale;
+  const pct = Number(e.target.value)/100; // 1.0 .. 3.0
+  const newScale = s.minScale * pct;
+  // keep the frame's visual center anchored while zooming
+  const cx = frameRect.width/2, cy = frameRect.height/2;
+  s.x = cx - (cx - s.x) * (newScale/oldScale);
+  s.y = cy - (cy - s.y) * (newScale/oldScale);
+  s.scale = newScale;
+  clampCropPosition();
+  applyCropTransform();
+}
+function cropModalCancel(){
+  processNextCropItem();
+}
+function cropModalConfirm(){
+  const s = _cropState; if(!s){ processNextCropItem(); return; }
+  const frame = document.getElementById('cropFrame');
+  const frameRect = frame.getBoundingClientRect();
+  const OUT_W = 900, OUT_H = Math.round(OUT_W/_cropRatio);
+  const canvas = document.createElement('canvas');
+  canvas.width = OUT_W; canvas.height = OUT_H;
+  const ctx = canvas.getContext('2d');
+  const img = document.getElementById('cropImg');
+  // Map the visible frame area back to source-image pixel coordinates.
+  const srcX = (0 - s.x) / s.scale;
+  const srcY = (0 - s.y) / s.scale;
+  const srcW = frameRect.width / s.scale;
+  const srcH = frameRect.height / s.scale;
+  ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, OUT_W, OUT_H);
+  let dataUrl;
+  try{
+    dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  }catch(err){
+    showToast(LANG==='ar' ? 'مينفعش تعدل صورة افتراضية من الإنترنت — ارفع صورة جديدة' : "Can't adjust this placeholder image — upload a new photo instead");
+    processNextCropItem();
+    return;
+  }
+  _cropResults.push(dataUrl);
+  processNextCropItem();
+}
+(function initCropDragHandlers(){
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const frame = document.getElementById('cropFrame');
+    const slider = document.getElementById('cropZoomSlider');
+    if(!frame || !slider) return;
+    frame.addEventListener('mousedown', cropPointerDown);
+    window.addEventListener('mousemove', cropPointerMove);
+    window.addEventListener('mouseup', cropPointerUp);
+    frame.addEventListener('touchstart', cropPointerDown, {passive:true});
+    frame.addEventListener('touchmove', cropPointerMove, {passive:false});
+    frame.addEventListener('touchend', cropPointerUp);
+    slider.addEventListener('input', cropZoomChange);
+  });
+})();
+
 init();
 </script>
+
+<!-- ---------- IMAGE CROP / POSITION MODAL ---------- -->
+<div class="crop-modal-overlay hidden" id="cropModalOverlay">
+  <div class="crop-modal">
+    <h3>اضبط الصورة</h3>
+    <p class="crop-hint">اسحب الصورة بإصبعك/الماوس لتحريكها، واستخدم الشريط للتكبير أو التصغير، لحد ما تظهر بالشكل اللي عايزاه بالظبط داخل الإطار.</p>
+    <div class="crop-frame" id="cropFrame">
+      <img id="cropImg" src="" draggable="false">
+      <div class="crop-frame-grid"></div>
+    </div>
+    <div class="crop-zoom-row">
+      <span style="font-size:11px;">−</span>
+      <input type="range" id="cropZoomSlider" min="100" max="300" value="100">
+      <span style="font-size:11px;">+</span>
+    </div>
+    <div class="crop-modal-actions">
+      <button type="button" class="crop-btn-cancel" onclick="cropModalCancel()">إلغاء</button>
+      <button type="button" class="crop-btn-confirm" onclick="cropModalConfirm()">تأكيد الصورة</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
