@@ -230,14 +230,28 @@ html[dir="rtl"] .cat-arrow{transform:scaleX(-1);}
 .quick-add:disabled{opacity:.4; cursor:not-allowed;}
 
 /* ---------- BRAND SHOWCASE CARDS (distinct from category tiles) ---------- */
-.brand-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:30px;}
+/* Two-column gold-on-black "brand passport" cards, matching the reference layout:
+   circular glowing logo centered up top, bold uppercase name, a thin gold tagline,
+   a hairline divider, then a bottom row with the product count on one side and an
+   arrow on the other. A pill "View All Brands" button sits under the grid. */
+.brand-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;}
 @media(min-width:860px){ .brand-grid{grid-template-columns:repeat(4,1fr);} }
-.brand-card{display:flex; flex-direction:column; align-items:center; gap:9px; padding:18px 8px 15px; background:var(--panel); border:1px solid var(--line); border-radius:16px; cursor:pointer; transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;}
-.brand-card:hover{transform:translateY(-3px); border-color:var(--maroon-light); box-shadow:0 10px 26px rgba(0,0,0,.4);}
-.brand-card-logo{width:60px; height:60px; border-radius:50%; overflow:hidden; border:1.5px solid var(--maroon-light); background:#1c1518; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 4px var(--maroon-glow);}
+.brand-card{display:flex; flex-direction:column; align-items:center; gap:10px; padding:26px 14px 16px; background:linear-gradient(180deg, var(--panel) 0%, #100d0c 100%); border:1px solid var(--maroon); border-radius:20px; cursor:pointer; transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;}
+.brand-card:hover{transform:translateY(-3px); border-color:var(--maroon-light); box-shadow:0 12px 28px rgba(0,0,0,.5), 0 0 0 1px var(--maroon-glow);}
+.brand-card-logo{width:88px; height:88px; border-radius:50%; overflow:hidden; border:1.5px solid var(--maroon-light); background:#0e0c0b; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 5px var(--maroon-glow), 0 0 22px rgba(200,155,74,.25);}
 .brand-card-logo img{width:100%; height:100%; object-fit:cover;}
-.brand-card-name{font-family:'Cormorant SC',serif; font-weight:600; font-size:12.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--cream); text-align:center; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-.brand-card-count{font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--muted);}
+.brand-card-name{font-family:'Cormorant SC',serif; font-weight:600; font-size:15px; letter-spacing:1.3px; text-transform:uppercase; color:var(--cream); text-align:center; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:2px;}
+.brand-card-tagline{font-size:10px; letter-spacing:.8px; text-transform:uppercase; color:var(--maroon-light); text-align:center; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.brand-card-divider{width:100%; height:1px; background:var(--line); margin:6px 0 2px;}
+.brand-card-foot{width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px;}
+.brand-card-count{font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted);}
+.brand-card-arrow{width:26px; height:26px; border-radius:50%; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:var(--maroon-light); font-size:13px; flex-shrink:0; transition:.2s;}
+.brand-card:hover .brand-card-arrow{border-color:var(--maroon-light); background:var(--maroon-glow);}
+html[dir="rtl"] .brand-card-arrow{transform:scaleX(-1);}
+.brand-viewall-wrap{display:flex; justify-content:center; margin-bottom:30px;}
+.brand-viewall-btn{display:inline-flex; align-items:center; gap:8px; padding:12px 26px; border:1px solid var(--maroon-light); border-radius:30px; background:transparent; color:var(--maroon-light); font-size:11px; letter-spacing:2px; text-transform:uppercase; transition:.2s;}
+.brand-viewall-btn:hover{background:var(--maroon-light); color:#0A0A0A;}
+html[dir="rtl"] .brand-viewall-btn span.cat-arrow{transform:scaleX(-1);}
 
 footer.site-footer{border-top:1px solid var(--line); margin-top:20px; padding:40px 20px 24px; text-align:center; color:var(--muted); font-size:11px;}
 footer.site-footer .flogo{font-family:'Cormorant SC',serif; color:var(--maroon-light); font-size:20px; letter-spacing:5px; margin-bottom:12px;}
@@ -886,6 +900,9 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
     <h2 class="section-title" data-i18n="shopWithBrands">Shop with Brands</h2>
     <p class="section-sub" data-i18n="pickYourBrand">Pick your favorite brand</p>
     <div class="brand-grid" id="brandShowcaseGrid"></div>
+    <div class="brand-viewall-wrap hidden" id="brandViewAllWrap">
+      <button class="brand-viewall-btn" onclick="toggleBrandShowcaseExpanded()"><span id="brandViewAllLabel">View All Brands</span> <span class="cat-arrow">→</span></button>
+    </div>
   </div>
 
   <div class="section-wrap" id="shop">
@@ -1858,6 +1875,7 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       <div class="form-panel" id="brandFormPanel">
         <div class="form-grid">
           <div><label>Brand Name</label><input id="bfName" placeholder="e.g. Nike, Local Vendor"></div>
+          <div><label>Tagline (shown under the name on the storefront)</label><input id="bfTagline" placeholder="e.g. Scooter Service &amp; Parts"></div>
           <div><label>Brand Key (used to log in)</label><input id="bfKey" placeholder="e.g. nike2024"></div>
           <div><label>Password</label><input id="bfPassword" placeholder="Password for this brand's admin"></div>
           <div class="full"><label>Logo</label>
@@ -2564,6 +2582,7 @@ function setLang(lang){
   LANG = lang;
   cacheSet('atlas:lang', lang);
   applyI18n();
+  renderBrandShowcase();
 }
 
 async function init(){
@@ -3083,19 +3102,41 @@ function renderCircleItems(){
 /* "Shop with Brands" — square tiles (same visual style as the old category tiles), one per
    brand that currently has at least one visible product. Tapping a brand opens its storefront
    page, showing only the products assigned to that brand (via the product form's Brand field). */
+let brandShowcaseExpanded = false;
 function renderBrandShowcase(){
   const grid = document.getElementById('brandShowcaseGrid');
   if(!grid) return;
   const activeBrands = (BRANDS||[]).filter(b=> visibleProducts().some(p=>p.brandId===b.id));
-  grid.innerHTML = activeBrands.length ? activeBrands.map(b=>{
+  const VISIBLE_COUNT = 4;
+  const shown = brandShowcaseExpanded ? activeBrands : activeBrands.slice(0, VISIBLE_COUNT);
+  grid.innerHTML = shown.length ? shown.map(b=>{
     const img = b.logo || (visibleProducts().find(p=>p.brandId===b.id)||{}).image || '';
     const count = visibleProducts().filter(p=>p.brandId===b.id).length;
+    const countLabel = LANG==='ar' ? `${count} ${count===1?'منتج':'منتجات'}` : `${count} ${count===1?'PRODUCT':'PRODUCTS'}`;
     return `<div class="brand-card" onclick="openBrandPage('${b.id}')">
       <div class="brand-card-logo">${img?`<img src="${img}">`:''}</div>
       <div class="brand-card-name">${b.name}</div>
-      <div class="brand-card-count">${count} ${count===1?'Item':'Items'}</div>
+      ${b.tagline ? `<div class="brand-card-tagline">${b.tagline}</div>` : ''}
+      <div class="brand-card-divider"></div>
+      <div class="brand-card-foot">
+        <span class="brand-card-count">${countLabel}</span>
+        <span class="brand-card-arrow">→</span>
+      </div>
     </div>`;
   }).join('') : '<div class="empty-note">No brands with products yet.</div>';
+
+  const viewAllWrap = document.getElementById('brandViewAllWrap');
+  const viewAllLabel = document.getElementById('brandViewAllLabel');
+  if(viewAllWrap){
+    viewAllWrap.classList.toggle('hidden', activeBrands.length <= VISIBLE_COUNT);
+    if(viewAllLabel) viewAllLabel.textContent = brandShowcaseExpanded
+      ? (LANG==='ar' ? 'عرض أقل' : 'Show Less')
+      : (LANG==='ar' ? 'عرض كل البراندات' : 'View All Brands');
+  }
+}
+function toggleBrandShowcaseExpanded(){
+  brandShowcaseExpanded = !brandShowcaseExpanded;
+  renderBrandShowcase();
 }
 
 /* ================= CATEGORY PAGE ================= */
@@ -5594,11 +5635,13 @@ function openBrandForm(id){
   if(id){
     const b = BRANDS.find(x=>x.id===id);
     document.getElementById('bfName').value = b.name || '';
+    document.getElementById('bfTagline').value = b.tagline || '';
     document.getElementById('bfKey').value = b.searchKey || '';
     document.getElementById('bfPassword').value = b.password || '';
     window._bfLogo = b.logo || null;
   } else {
     document.getElementById('bfName').value = '';
+    document.getElementById('bfTagline').value = '';
     document.getElementById('bfKey').value = '';
     document.getElementById('bfPassword').value = '';
     window._bfLogo = null;
@@ -5630,6 +5673,7 @@ function adjustBrandLogo(){
 }
 async function saveBrand(){
   const name = document.getElementById('bfName').value.trim();
+  const tagline = document.getElementById('bfTagline').value.trim();
   const key = document.getElementById('bfKey').value.trim();
   const password = document.getElementById('bfPassword').value.trim();
   if(!name){ showToast(LANG==='ar'?'اكتب اسم البراند':'Please enter a brand name'); return; }
@@ -5641,6 +5685,7 @@ async function saveBrand(){
   const data = {
     id: editingBrandId || uid('brand'),
     name,
+    tagline,
     searchKey: key,
     password,
     logo: window._bfLogo || null,
