@@ -411,12 +411,15 @@ footer.site-footer p{max-width:340px; margin:0 auto 16px; line-height:1.7;}
 .checkout-panel{position:absolute; inset:0; background:var(--bg); overflow-y:auto; padding:20px;}
 .checkout-panel .pp-topbar{padding:0 0 20px; background:none;}
 .ck-label{font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); display:block;}
-.invoice-box{border:1px solid var(--line); background:var(--panel); padding:16px; margin-top:8px;}
-.invoice-box h4{font-family:'Cormorant SC',serif; font-size:16px; letter-spacing:1.5px; margin-bottom:10px;}
-.invoice-row{display:flex; justify-content:space-between; gap:10px; font-size:12px; color:var(--muted); padding:7px 0; border-bottom:1px solid var(--line);}
+.invoice-box{border:1px solid var(--line); border-top:2px solid var(--gold); background:var(--panel); padding:18px; margin-top:8px; border-radius:6px; position:relative; overflow:hidden;}
+.invoice-box::before{content:''; position:absolute; top:0; left:0; right:0; height:60px; background:radial-gradient(circle at 50% 0%, var(--maroon-glow), transparent 70%); opacity:.5; pointer-events:none;}
+.invoice-box-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; position:relative;}
+.invoice-box-brand{font-family:'Cormorant SC',serif; font-weight:700; font-size:15px; letter-spacing:4px; color:var(--gold); text-shadow:0 0 12px var(--maroon-glow);}
+.invoice-box h4{font-family:'Cormorant SC',serif; font-size:16px; letter-spacing:1.5px; margin-bottom:10px; color:var(--cream);}
+.invoice-row{display:flex; justify-content:space-between; gap:10px; font-size:12px; color:var(--muted); padding:7px 0; border-bottom:1px dashed var(--line);}
 .invoice-row:last-child{border-bottom:none;}
 .invoice-item-name{color:var(--cream);}
-.invoice-total-row{display:flex; justify-content:space-between; font-size:16px; margin-top:12px; padding-top:12px; border-top:1px solid var(--line); color:var(--cream);}
+.invoice-total-row{display:flex; justify-content:space-between; align-items:center; font-size:17px; margin-top:12px; padding:12px 14px; border-top:1px solid var(--gold); background:rgba(200,155,74,0.08); border-radius:4px; color:var(--gold); font-family:'Cormorant SC',serif; letter-spacing:1px;}
 
 .toast{position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--maroon); color:#fff; padding:12px 22px; font-size:12px; letter-spacing:1px; z-index:200; opacity:0; transition:.3s; pointer-events:none; white-space:nowrap;}
 .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
@@ -566,10 +569,19 @@ td select{padding:6px 8px; font-size:12px;}
 .banner-admin-preview{width:100%; max-width:520px; aspect-ratio:16/8; object-fit:cover; border:1px solid var(--line); margin:16px 0; filter:grayscale(.3);}
 .file-drop{border:1px dashed var(--line); padding:26px; text-align:center; color:var(--muted); font-size:12px; cursor:pointer;}
 .file-drop:hover{border-color:var(--maroon-light);}
-.notif-item{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--maroon-light); padding:14px 18px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; gap:10px;}
-.notif-item.read{opacity:.5; border-left-color:var(--line);}
-.notif-item .ntext{font-size:13px;}
-.notif-item .ntime{font-size:11px; color:var(--muted); margin-top:4px;}
+.notif-item{background:linear-gradient(135deg, var(--panel), var(--bg-alt)); border:1px solid var(--line); border-left:3px solid var(--maroon-light); border-radius:10px; padding:14px 16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; gap:12px; transition:.2s; box-shadow:0 2px 10px rgba(0,0,0,.18);}
+.notif-item:hover{border-color:var(--maroon-light); transform:translateY(-1px);}
+.notif-item.read{opacity:.5; border-left-color:var(--line); box-shadow:none;}
+.notif-item .nrow{display:flex; align-items:flex-start; gap:12px; min-width:0;}
+.notif-item .nicon{width:34px; height:34px; border-radius:50%; background:rgba(200,155,74,0.12); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;}
+.notif-item .ntext{font-size:13px; color:var(--cream); line-height:1.5;}
+.notif-item .ntime{font-size:11px; color:var(--muted); margin-top:4px; letter-spacing:.5px;}
+.notif-item.n-order{border-left-color:var(--gold);}
+.notif-item.n-stock{border-left-color:var(--danger);}
+.notif-item.n-review{border-left-color:var(--ok);}
+.notif-item.n-coupon{border-left-color:var(--gold);}
+.notif-item.n-return{border-left-color:var(--maroon-light);}
+.notif-item.n-category{border-left-color:var(--muted);}
 .empty-note{color:var(--muted); font-size:13px; padding:24px; text-align:center; background:var(--panel); border:1px solid var(--line);}
 .two-col{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
 @media(max-width:900px){.two-col{grid-template-columns:1fr;}}
@@ -1102,9 +1114,10 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
     <div class="product-panel">
       <div class="pp-topbar"><button onclick="closeReturnRequest()">←</button><span style="font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" data-i18n="returnOrder">Return Order</span><span></span></div>
       <div class="section-wrap" style="padding-top:10px;">
+        <div id="retExchangedStat" class="msg-note" style="text-align:center; margin-bottom:14px;"></div>
         <div id="retLookupBox">
           <label class="ck-label" data-i18n="orderId">Order ID</label>
-          <input type="text" id="retOrderId" placeholder="e.g. AUR-12345" style="width:100%; margin:6px 0 14px;">
+          <input type="text" id="retOrderId" placeholder="e.g. ATLAS-12345" style="width:100%; margin:6px 0 14px;">
           <label class="ck-label" data-i18n="phoneNumber">Phone number</label>
           <input type="tel" id="retPhone" placeholder="01xxxxxxxxx" style="width:100%; margin:6px 0 14px;">
           <button class="btn" style="width:100%;" onclick="lookupReturnOrder()" data-i18n="findMyOrder">Find My Order</button>
@@ -1123,7 +1136,7 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       <div class="pp-topbar"><button onclick="closeTrackOrder()">←</button><span style="font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;" data-i18n="trackOrder">Track Order</span><span></span></div>
       <div class="section-wrap" style="padding-top:10px;">
         <label class="ck-label" data-i18n="orderId">Order ID</label>
-        <input type="text" id="trkOrderId" placeholder="e.g. AUR-12345" style="width:100%; margin:6px 0 14px;">
+        <input type="text" id="trkOrderId" placeholder="e.g. ATLAS-12345" style="width:100%; margin:6px 0 14px;">
         <label class="ck-label" data-i18n="phoneNumber">Phone number</label>
         <input type="tel" id="trkPhone" placeholder="01xxxxxxxxx" style="width:100%; margin:6px 0 14px;">
         <button class="btn" style="width:100%;" onclick="submitTrackOrder()" data-i18n="trackOrder">Track Order</button>
@@ -1193,6 +1206,7 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       <button data-sec="brandorders" class="hidden" id="navBrandOrders">📦 My Orders</button>
       <button data-sec="brandreturns" class="hidden" id="navBrandReturns">📩 My Return Requests <span class="nbadge hidden" id="brandReturnReqBadge">0</span></button>
       <button data-sec="brandreviews" class="hidden" id="navBrandReviews">⭐ My Reviews</button>
+      <button data-sec="brandnotifications" class="hidden" id="navBrandNotifications">🔔 Push Notifications <span class="nbadge hidden" id="brandNotifBadge">0</span></button>
       <button data-sec="orders" class="role-super">🛒 Orders</button>
       <button data-sec="returns" class="role-super">↩ Returns</button>
       <button data-sec="returnrequests" class="role-super">📩 Return Requests <span class="nbadge hidden" id="returnReqBadge">0</span></button>
@@ -1209,7 +1223,7 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       <button data-sec="brands" class="role-super">🏷️ Brands</button>
       <button data-sec="banner" class="role-super">🖼️ Banner Slides</button>
       <button data-sec="statistics">📈 Statistics</button>
-      <button data-sec="notifications" class="role-super">🔔 Notifications <span class="nbadge hidden" id="notifBadge">0</span></button>
+      <button data-sec="notifications" class="role-super">🔔 Push Notifications <span class="nbadge hidden" id="notifBadge">0</span></button>
       <button data-sec="reviews" class="role-super">⭐ Reviews <span class="nbadge hidden" id="reviewBadge">0</span></button>
       <button data-sec="wablast" class="role-super">💬 WhatsApp Blast</button>
       <button data-sec="settings" class="role-super">⚙️ Settings</button>
@@ -1314,10 +1328,10 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
 
     <section class="admin-section" id="sec-brandorders">
       <div class="admin-h1">My Orders</div>
-      <div class="admin-sub">Orders that include at least one of your products. Only your own items and their status are shown — statuses are managed by the store admin.</div>
+      <div class="admin-sub">Orders that include at least one of your products. You can mark an order Delivered or Cancelled, view its full details and invoice, and message the customer on WhatsApp.</div>
       <div style="overflow-x:auto;">
       <table>
-        <thead><tr><th>Order #</th><th>Customer</th><th>Phone</th><th>Governorate</th><th>Date</th><th>My Items</th><th>My Revenue</th><th>Status</th></tr></thead>
+        <thead><tr><th>Order #</th><th>Customer</th><th>Phone</th><th>Governorate</th><th>Date</th><th>My Items</th><th>My Revenue</th><th>Status</th><th></th></tr></thead>
         <tbody id="brandOrdersTable"></tbody>
       </table>
       </div>
@@ -1534,6 +1548,20 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
         <br>After changing it, come back and tap "Enable device notifications" again.
       </div>
       <div id="notifList"></div>
+    </section>
+
+    <section class="admin-section" id="sec-brandnotifications">
+      <div class="admin-h1">Push Notifications</div>
+      <div class="admin-sub">Alerts about your own brand — new orders, low stock, reviews and return requests on your products. Turn on device notifications so these reach you even if the store page/app is closed.</div>
+      <div class="admin-toolbar"><button class="btn secondary" onclick="requestNotifPermission()">Enable device notifications</button><button class="btn secondary" onclick="markAllReadBrand()">Mark all as read</button></div>
+      <div id="brandNotifPermHint" class="hidden" style="background:rgba(161,49,72,0.10); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin-bottom:20px; font-size:12.5px; line-height:1.8; color:var(--muted);">
+        <b style="color:var(--cream);">Notifications are blocked for this site.</b> Your browser remembers your last answer, so clicking the button again won't ask you a second time — you have to reset it manually:
+        <br>• <b>Android Chrome:</b> tap the 🔒/ⓘ icon left of the address bar → Permissions → Notifications → Allow.
+        <br>• <b>iPhone (Safari):</b> Settings → Safari → Advanced → Website Data, or add this store to your Home Screen first (Share → Add to Home Screen) — Safari only supports push for installed web-apps.
+        <br>• <b>Desktop Chrome/Edge:</b> click the icon left of the address bar → Site settings → Notifications → Allow, then reload the page.
+        <br>After changing it, come back and tap "Enable device notifications" again.
+      </div>
+      <div id="brandNotifList"></div>
     </section>
 
     <section class="admin-section" id="sec-reviews">
@@ -1870,13 +1898,13 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
 
     <section class="admin-section" id="sec-brands">
       <div class="admin-h1">Brands</div>
-      <div class="admin-sub">Add a brand/vendor account. Give the brand owner the Brand Key + Password — they log in from the same admin login screen, but only see and manage their own products, orders touching their products, and their own statistics.</div>
+      <div class="admin-sub">Add a brand/vendor account. Give the brand owner the User Name + Password — they log in from the same admin login screen, but only see and manage their own products, orders touching their products, and their own statistics.</div>
       <div class="admin-toolbar"><button class="btn" onclick="openBrandForm()">+ Add Brand</button></div>
       <div class="form-panel" id="brandFormPanel">
         <div class="form-grid">
           <div><label>Brand Name</label><input id="bfName" placeholder="e.g. Nike, Local Vendor"></div>
           <div><label>Tagline (shown under the name on the storefront)</label><input id="bfTagline" placeholder="e.g. Scooter Service &amp; Parts"></div>
-          <div><label>Brand Key (used to log in)</label><input id="bfKey" placeholder="e.g. nike2024"></div>
+          <div><label>User Name (used to log in)</label><input id="bfKey" placeholder="e.g. nike2024"></div>
           <div><label>Password</label><input id="bfPassword" placeholder="Password for this brand's admin"></div>
           <div class="full"><label>Logo</label>
             <div class="file-drop" onclick="document.getElementById('bfLogoFile').click()" style="max-width:220px;">Click to upload logo</div>
@@ -1892,7 +1920,7 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
       </div>
       <div style="overflow-x:auto;">
       <table>
-        <thead><tr><th>Logo</th><th>Name</th><th>Brand Key</th><th>Products</th><th>Views</th><th>Units Sold</th><th>Revenue</th><th></th></tr></thead>
+        <thead><tr><th>Logo</th><th>Name</th><th>User Name</th><th>Products</th><th>Views</th><th>Units Sold</th><th>Revenue</th><th></th></tr></thead>
         <tbody id="brandsTable"></tbody>
       </table>
       </div>
@@ -1963,7 +1991,7 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
   <div class="admin-login-card">
     <h3>ADMIN LOGIN</h3>
     <div class="admin-login-err" id="admLoginErr"></div>
-    <input type="text" id="admLoginBrandKey" placeholder="Brand Key (leave empty for main admin)" maxlength="30" style="margin-bottom:8px;" onkeydown="if(event.key==='Enter') document.getElementById('admLoginPass').focus()">
+    <input type="text" id="admLoginBrandKey" placeholder="User Name" maxlength="30" style="margin-bottom:8px;" onkeydown="if(event.key==='Enter') document.getElementById('admLoginPass').focus()">
     <input type="password" id="admLoginPass" placeholder="Password" maxlength="20" onkeydown="if(event.key==='Enter') submitAdminLogin()">
     <button class="btn" onclick="submitAdminLogin()">Enter</button>
     <button class="btn secondary" style="width:100%; margin-top:8px;" onclick="cancelAdminLogin()">Cancel</button>
@@ -2003,7 +2031,7 @@ const firebaseConfig = {
    Without this key, notifications will only work while this page/tab is open
    (that's the "not accepted" error you were seeing).
 ================================================================ */
-const FCM_VAPID_KEY = "PASTE_YOUR_VAPID_PUBLIC_KEY_HERE";
+const FCM_VAPID_KEY = "BP_DhphPhmeNxy_ZfBSBLLmo3hf_vj1s3tZ5_cEDsSNsvoJuipfJ64USXGdmxlfmJdbH4gC3mZ0f-VUR-xFNoF8";
 
 let fbDb = null, fbAuth = null, fbReady = false, fbMessaging = null;
 try{
@@ -2260,6 +2288,10 @@ function playPingSound(){
     o.start(); o.stop(ctx.currentTime+0.18);
   }catch(e){}
 }
+function showNotifPermHint(){
+  const h1 = document.getElementById('notifPermHint'); if(h1) h1.classList.remove('hidden');
+  const h2 = document.getElementById('brandNotifPermHint'); if(h2) h2.classList.remove('hidden');
+}
 async function requestNotifPermission(){
   if(typeof Notification === 'undefined'){
     showToast('This browser/app does not support notifications');
@@ -2274,8 +2306,7 @@ async function requestNotifPermission(){
   // That's almost always the real reason this looked like it "isn't accepted".
   if(Notification.permission === 'denied'){
     showToast('Notifications are blocked in your browser/phone settings — enable them manually, see the note below', 6000);
-    const hint = document.getElementById('notifPermHint');
-    if(hint) hint.classList.remove('hidden');
+    showNotifPermHint();
     return;
   }
   let perm;
@@ -2283,8 +2314,7 @@ async function requestNotifPermission(){
   catch(e){ showToast('Could not request permission'); return; }
   if(perm !== 'granted'){
     showToast('Notifications not enabled');
-    const hint = document.getElementById('notifPermHint');
-    if(hint) hint.classList.remove('hidden');
+    showNotifPermHint();
     return;
   }
   showToast('Notifications enabled ✓');
@@ -2653,7 +2683,7 @@ async function init(){
 
 async function syncFromFirestore(){
   if(!fbReady){ return; }
-  const [products, orders, customers, coupons, notifs, banner, bannerslides, stats, cart, wishlist, shipping, settings, sizeguides, returns, returnrequests, categoryimages, categories, pendingcategories, myprofile, lastviewed, academy, privatetrainers, trainerbookings, introslides, hometiles] = await Promise.all([
+  const [products, orders, customers, coupons, notifs, banner, bannerslides, stats, cart, wishlist, shipping, settings, sizeguides, returns, returnrequests, categoryimages, categories, pendingcategories, circleitems, brandsData, myprofile, lastviewed, academy, privatetrainers, trainerbookings, introslides, hometiles] = await Promise.all([
     getData('atlas:products', null, true),
     getData('atlas:orders', [], true),
     getData('atlas:customers', [], true),
@@ -2672,6 +2702,8 @@ async function syncFromFirestore(){
     getData('atlas:categoryimages', {}, true),
     getData('atlas:categories', null, true),
     getData('atlas:pendingcategories', [], true),
+    getData('atlas:circleitems', null, true),
+    getData('atlas:brands', [], true),
     getData('atlas:myprofile', null, false),
     getData('atlas:lastviewed', null, false),
     getData('atlas:academy', [], true),
@@ -2701,6 +2733,18 @@ async function syncFromFirestore(){
   CATEGORIES = categories || ['تيشرت','شورت','جزم','كورة'];
   if(!categories){ await setData('atlas:categories', CATEGORIES, true); }
   PENDING_CATEGORIES = pendingcategories || [];
+  const prevCircleItemsJSON = JSON.stringify(CIRCLE_ITEMS);
+  CIRCLE_ITEMS = circleitems || defaultCircleItems();
+  if(JSON.stringify(CIRCLE_ITEMS) !== prevCircleItemsJSON){
+    renderCircleItems();
+    if(document.getElementById('sec-circleitems')) renderCircleItemsAdmin();
+  }
+  const prevBrandsJSON = JSON.stringify(BRANDS);
+  BRANDS = brandsData || [];
+  if(JSON.stringify(BRANDS) !== prevBrandsJSON){
+    if(typeof renderBrandShowcase==='function') renderBrandShowcase();
+    if(document.getElementById('sec-brands')) renderBrandsAdmin();
+  }
   MY_PROFILE = myprofile || MY_PROFILE;
   MY_LAST_VIEWED = lastviewed || MY_LAST_VIEWED;
   const prevAcademyJSON = JSON.stringify(ACADEMY);
@@ -3658,7 +3702,7 @@ async function submitReturnRequest(orderId){
   RETURN_REQUESTS.unshift(request);
   await Promise.allSettled([
     setData('atlas:returnrequests', RETURN_REQUESTS, true),
-    addNotification('return', `New return request for order ${order.id} from ${order.customer}`)
+    addNotification('return', `New return request for order ${order.id} from ${order.customer}`, brandIdsForOrder(order))
   ]);
   const box = document.getElementById('retFormBox');
   box.innerHTML = `<div style="text-align:center; padding:10px 0;">
@@ -3861,7 +3905,7 @@ async function submitReview(){
   currentProduct.reviews = currentProduct.reviews || [];
   currentProduct.reviews.push({id:uid('rev'), name, text, rating, date: todayStr(), status:'pending'});
   await persistProducts();
-  await addNotification('review', `${name} left a ${rating}★ review on "${currentProduct.name}" — awaiting approval`);
+  await addNotification('review', `${name} left a ${rating}★ review on "${currentProduct.name}" — awaiting approval`, currentProduct.brandId?[currentProduct.brandId]:[]);
   document.getElementById('revName').value=''; document.getElementById('revText').value='';
   document.getElementById('reviewForm').classList.remove('open');
   renderProductPage();
@@ -4031,7 +4075,7 @@ function renderCheckoutInvoice(){
   const discountAmt = appliedCoupon ? rawSub - discountedSub : 0;
   const total = discountedSub + shipping;
   box.innerHTML = `
-    <h4>${tr('orderSummary')}</h4>
+    <div class="invoice-box-head"><span class="invoice-box-brand">${(SETTINGS&&SETTINGS.name)||'ATLAS'}</span><h4 style="margin:0;">${tr('orderSummary')}</h4></div>
     ${CHECKOUT_ITEMS.map(i=>`<div class="invoice-row"><span class="invoice-item-name">${i.name} (${i.size} / ${i.color}) × ${i.qty}</span><span>${fmtMoney(i.price*i.qty)}</span></div>`).join('')}
     <div class="invoice-row"><span>${tr('subtotal')}</span><span>${fmtMoney(rawSub)}</span></div>
     ${appliedCoupon ? `<div class="invoice-row"><span>${tr('discount')} (${appliedCoupon.code})</span><span>-${fmtMoney(discountAmt)}</span></div>` : ''}
@@ -4066,7 +4110,7 @@ async function placeOrder(){
     const amount = subtotal + shipping;
     const pointsUsed = appliedPointsRedeem ? appliedPointsRedeem.points : 0;
     const pointsEarned = Math.floor((loyaltySettings().pointsPerOrder!=null ? loyaltySettings().pointsPerOrder : 10));
-    const order = { id: 'AUR-' + Math.floor(10000+Math.random()*89999), customer:name, phone, phone2, governorate:gov, address, items: CHECKOUT_ITEMS.map(i=>({...i})), subtotal, shipping, amount, coupon: appliedCoupon?appliedCoupon.code:null, pointsUsed, pointsEarned, status:'Pending', tracking:'', date: todayStr() };
+    const order = { id: 'ATLAS-' + Math.floor(10000+Math.random()*89999), customer:name, phone, phone2, governorate:gov, address, items: CHECKOUT_ITEMS.map(i=>({...i})), subtotal, shipping, amount, coupon: appliedCoupon?appliedCoupon.code:null, pointsUsed, pointsEarned, status:'Pending', tracking:'', date: todayStr() };
     ORDERS.unshift(order);
 
     // Note: WhatsApp is no longer opened automatically here — the customer can tap
@@ -4093,18 +4137,18 @@ async function placeOrder(){
       setData('atlas:customers', CUSTOMERS, true),
       persistProducts(),
       setData('atlas:stats', STATS, true),
-      addNotification('order', `New order ${order.id} from ${name} — ${fmtMoney(amount)}`)
+      addNotification('order', `New order ${order.id} from ${name} — ${fmtMoney(amount)}`, brandIdsForOrder(order))
     ];
 
     if(appliedCoupon){
       const couponCode = appliedCoupon.code;
       const c = COUPONS.find(x=>x.code===couponCode);
       if(c){ c.used=(c.used||0)+1; syncTasks.push(setData('atlas:coupons', COUPONS, true)); }
-      syncTasks.push(addNotification('coupon', pointsUsed ? `Customer ${name} redeemed ${pointsUsed} loyalty points on order ${order.id}` : `Coupon "${couponCode}" was used on order ${order.id}`));
+      syncTasks.push(addNotification('coupon', pointsUsed ? `Customer ${name} redeemed ${pointsUsed} loyalty points on order ${order.id}` : `Coupon "${couponCode}" was used on order ${order.id}`, brandIdsForOrder(order)));
       appliedCoupon = null;
     }
 
-    CHECKOUT_ITEMS.forEach(ci=>{ const p = PRODUCTS.find(x=>x.id===ci.productId); if(p && p.qty>0 && p.qty<=5){ syncTasks.push(addNotification('stock', `"${p.name}" is running low (${p.qty} left)`)); } });
+    CHECKOUT_ITEMS.forEach(ci=>{ const p = PRODUCTS.find(x=>x.id===ci.productId); if(p && p.qty>0 && p.qty<=5){ syncTasks.push(addNotification('stock', `"${p.name}" is running low (${p.qty} left)`, p.brandId?[p.brandId]:[])); } });
 
     await Promise.allSettled(syncTasks);
 
@@ -4128,9 +4172,16 @@ async function placeOrder(){
 }
 
 async function persistProducts(){ return await setData('atlas:products', PRODUCTS, true); }
-async function addNotification(type, message){
-  NOTIFS.unshift({id:uid('n'), type, message, date:new Date().toISOString(), read:false});
+async function addNotification(type, message, brandIds){
+  NOTIFS.unshift({id:uid('n'), type, message, date:new Date().toISOString(), read:false, brandIds:(brandIds||[]).filter(Boolean)});
   await setData('atlas:notifications', NOTIFS, true);
+}
+/* Returns the distinct brandIds touched by an order's line items, so an order/stock/return
+   notification can be routed to the right brand admin(s) as well as the main admin. */
+function brandIdsForOrder(order){
+  const ids = new Set();
+  (order.items||[]).forEach(ci=>{ const p = PRODUCTS.find(x=>x.id===ci.productId); if(p && p.brandId) ids.add(p.brandId); });
+  return [...ids];
 }
 
 /* ================= ADMIN ================= */
@@ -4157,7 +4208,7 @@ async function submitAdminLogin(){
     // Brand-admin login: match the brand's search key + password
     const brand = BRANDS.find(b=>b.searchKey.toLowerCase() === brandKey.toLowerCase());
     if(!brand || pass !== brand.password){
-      document.getElementById('admLoginErr').textContent = 'Incorrect brand key or password';
+      document.getElementById('admLoginErr').textContent = 'Incorrect user name or password';
       return;
     }
     ADMIN_LOGGED_IN = true;
@@ -4207,6 +4258,7 @@ function applyAdminRoleScoping(){
   const navBrandOrders = document.getElementById('navBrandOrders');
   const navBrandReturns = document.getElementById('navBrandReturns');
   const navBrandReviews = document.getElementById('navBrandReviews');
+  const navBrandNotifications = document.getElementById('navBrandNotifications');
   if(isBrandAdmin()){
     nav.classList.add('role-brand');
     adminEl.classList.add('brand-mode');
@@ -4215,6 +4267,8 @@ function applyAdminRoleScoping(){
     if(navBrandOrders) navBrandOrders.classList.remove('hidden');
     if(navBrandReturns) navBrandReturns.classList.remove('hidden');
     if(navBrandReviews) navBrandReviews.classList.remove('hidden');
+    if(navBrandNotifications) navBrandNotifications.classList.remove('hidden');
+    renderBrandNotifications();
   }else{
     nav.classList.remove('role-brand');
     adminEl.classList.remove('brand-mode');
@@ -4223,6 +4277,7 @@ function applyAdminRoleScoping(){
     if(navBrandOrders) navBrandOrders.classList.add('hidden');
     if(navBrandReturns) navBrandReturns.classList.add('hidden');
     if(navBrandReviews) navBrandReviews.classList.add('hidden');
+    if(navBrandNotifications) navBrandNotifications.classList.add('hidden');
   }
 }
 function exitAdmin(){
@@ -5752,6 +5807,15 @@ function renderBrandOwnStats(){
 /* Read-only order view for a brand admin: shows every order that contains at least one of
    their products, but only their own line items (qty/revenue) — never other brands' items or
    the ability to change status, since a shared order is still owned by the store admin. */
+/* A brand admin can only push an order to one of two end states — Delivered or Cancelled —
+   never back into the Pending/Confirmed/Shipping pipeline (that stays store-admin-only).
+   The dropdown always includes the order's current status so it displays correctly even if
+   that status isn't one the brand admin is allowed to pick. */
+function brandOrderStatusOptions(current){
+  const allowed = ['Delivered','Cancelled'];
+  const opts = allowed.includes(current) ? allowed.slice() : [current, ...allowed];
+  return opts.map(s=>`<option value="${s}" ${current===s?'selected':''}>${s}</option>`).join('');
+}
 function renderBrandOrdersAdmin(){
   const tbody = document.getElementById('brandOrdersTable');
   if(!tbody) return;
@@ -5765,11 +5829,35 @@ function renderBrandOrdersAdmin(){
       const qty = myItems.reduce((s,i)=>s+i.qty,0);
       const revenue = myItems.reduce((s,i)=>s+(i.price||0)*i.qty,0);
       const itemsLabel = myItems.map(i=>`${i.name} ×${i.qty}`).join(', ');
+      const locked = o.status==='Cancelled' || o.status==='Returned';
       return `<tr><td>${o.id}</td><td>${o.customer}</td><td>${o.phone||''}</td><td>${o.governorate||''}</td><td>${o.date}</td>
         <td>${itemsLabel} (${qty})</td><td>${fmtMoney(revenue)}</td>
-        <td><span class="status-pill status-${o.status}">${o.status}</span></td></tr>`;
+        <td>${locked
+          ? `<span class="status-pill status-${o.status}">${o.status}</span>`
+          : `<select onchange="updateBrandOrderStatus('${o.id}', this.value, this)">${brandOrderStatusOptions(o.status)}</select>
+             <span class="status-pill status-${o.status}" style="margin-left:8px;">${o.status}</span>`}</td>
+        <td class="row-actions"><button title="View details" onclick="viewOrder('${o.id}')">👁</button><button title="Print invoice" onclick="printOrderInvoice('${o.id}')">🖨</button><button title="Message on WhatsApp" onclick="whatsappCustomer('${o.phone}','${o.id}')">💬</button></td></tr>`;
     });
-  tbody.innerHTML = rows.join('') || '<tr><td colspan="8" class="empty-note">No orders include your products yet.</td></tr>';
+  tbody.innerHTML = rows.join('') || '<tr><td colspan="9" class="empty-note">No orders include your products yet.</td></tr>';
+}
+async function updateBrandOrderStatus(id, status, selectEl){
+  if(!isBrandAdmin()) return; // this action is scoped to brand admins only
+  const o = ORDERS.find(x=>x.id===id);
+  if(!o) return;
+  if(status === 'Cancelled'){
+    const reason = prompt('Please enter a reason for cancelling this order:');
+    if(reason === null || !reason.trim()){
+      showToast('Cancellation reason is required — order not changed');
+      if(selectEl) selectEl.value = o.status;
+      return;
+    }
+    o.cancelReason = reason.trim();
+  }
+  o.status = status;
+  await setData('atlas:orders', ORDERS, true);
+  renderBrandOrdersAdmin();
+  updateOrderStatus_refreshDependents();
+  showToast('Order '+id+' set to '+status);
 }
 
 /* Read-only return-request view for a brand admin: any request tied to an order that contains
@@ -6408,17 +6496,35 @@ function exportMonthlyPDF(){
   doc.save(`sales-report-${month}.pdf`);
   showToast('PDF report exported');
 }
-function renderNotifications(){
-  document.getElementById('notifList').innerHTML = NOTIFS.map(n=>`
-    <div class="notif-item ${n.read?'read':''}">
-      <div><div class="ntext">${iconFor(n.type)} ${n.message}</div><div class="ntime">${new Date(n.date).toLocaleString()}</div></div>
+function notifCardHtml(n){
+  return `
+    <div class="notif-item n-${n.type} ${n.read?'read':''}">
+      <div class="nrow"><div class="nicon">${iconFor(n.type)}</div><div><div class="ntext">${n.message}</div><div class="ntime">${new Date(n.date).toLocaleString()}</div></div></div>
       ${!n.read?`<button class="btn small secondary" onclick="markRead('${n.id}')">Mark read</button>`:''}
-    </div>`).join('') || '<div class="empty-note">No notifications yet.</div>';
-  updateNotifBadge();
+    </div>`;
 }
-function iconFor(type){ return {order:'🛒',stock:'📦',review:'⭐',coupon:'🏷',category:'🆕'}[type] || '🔔'; }
+function renderNotifications(){
+  const list = document.getElementById('notifList');
+  if(list) list.innerHTML = NOTIFS.map(notifCardHtml).join('') || '<div class="empty-note">No notifications yet.</div>';
+  updateNotifBadge();
+  if(isBrandAdmin()) renderBrandNotifications();
+}
+/* Brand admins only ever see notifications tagged with their own brandId — everyone still
+   shares the same underlying list/read-state, they just get a filtered view + their own badge. */
+function myBrandNotifs(){
+  const id = ACTIVE_BRAND_ID;
+  return NOTIFS.filter(n=> (n.brandIds||[]).includes(id));
+}
+function renderBrandNotifications(){
+  const list = document.getElementById('brandNotifList');
+  if(!list) return;
+  list.innerHTML = myBrandNotifs().map(notifCardHtml).join('') || '<div class="empty-note">No notifications yet.</div>';
+  updateBrandNotifBadge();
+}
+function iconFor(type){ return {order:'🛒',stock:'📦',review:'⭐',coupon:'🏷',return:'📩',category:'🆕'}[type] || '🔔'; }
 async function markRead(id){ const n=NOTIFS.find(x=>x.id===id); if(n){ n.read=true; await setData('atlas:notifications', NOTIFS, true); renderNotifications(); } }
 async function markAllRead(){ NOTIFS.forEach(n=>n.read=true); await setData('atlas:notifications', NOTIFS, true); renderNotifications(); }
+async function markAllReadBrand(){ myBrandNotifs().forEach(n=>n.read=true); await setData('atlas:notifications', NOTIFS, true); renderNotifications(); }
 
 /* ================= SETTINGS ================= */
 function renderSettingsForm(){
@@ -6640,6 +6746,12 @@ function importBackup(e){
 function updateNotifBadge(){
   const unread = NOTIFS.filter(n=>!n.read).length;
   const b = document.getElementById('notifBadge');
+  b.textContent = unread; b.classList.toggle('hidden', unread===0);
+}
+function updateBrandNotifBadge(){
+  const b = document.getElementById('brandNotifBadge');
+  if(!b) return;
+  const unread = myBrandNotifs().filter(n=>!n.read).length;
   b.textContent = unread; b.classList.toggle('hidden', unread===0);
 }
 
