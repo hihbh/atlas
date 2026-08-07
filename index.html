@@ -1203,10 +1203,11 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
     <div class="admin-logo">ATLAS<span>Admin Panel</span><span class="brand-admin-badge hidden" id="brandAdminBadge"></span></div>
     <div class="admin-nav" id="adminNav">
       <button data-sec="products" class="active">📦 Products</button>
-      <button data-sec="brandorders" class="hidden" id="navBrandOrders">📦 My Orders</button>
-      <button data-sec="brandreturns" class="hidden" id="navBrandReturns">📩 My Return Requests <span class="nbadge hidden" id="brandReturnReqBadge">0</span></button>
-      <button data-sec="brandreviews" class="hidden" id="navBrandReviews">⭐ My Reviews</button>
-      <button data-sec="brandnotifications" class="hidden" id="navBrandNotifications">🔔 Push Notifications <span class="nbadge hidden" id="brandNotifBadge">0</span></button>
+      <button data-sec="brandorders" class="hidden" id="navBrandOrders">My Orders</button>
+      <button data-sec="brandreturns" class="hidden" id="navBrandReturns">My Return Requests <span class="nbadge hidden" id="brandReturnReqBadge">0</span></button>
+      <button data-sec="brandreviews" class="hidden" id="navBrandReviews">My Reviews</button>
+      <button data-sec="brandnotifications" class="hidden" id="navBrandNotifications">Push Notifications <span class="nbadge hidden" id="brandNotifBadge">0</span></button>
+      <button data-sec="brandshipping" class="hidden" id="navBrandShipping">My Shipping</button>
       <button data-sec="orders" class="role-super">🛒 Orders</button>
       <button data-sec="returns" class="role-super">↩ Returns</button>
       <button data-sec="returnrequests" class="role-super">📩 Return Requests <span class="nbadge hidden" id="returnReqBadge">0</span></button>
@@ -1562,6 +1563,23 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
         <br>After changing it, come back and tap "Enable device notifications" again.
       </div>
       <div id="brandNotifList"></div>
+    </section>
+
+    <section class="admin-section" id="sec-brandshipping">
+      <div class="admin-h1">My Shipping</div>
+      <div class="admin-sub">Set your own delivery price for each governorate you ship to. If a customer's order is made up of your products, this price is used instead of the store's default. Remove a governorate if you don't deliver there — the store default will be used instead.</div>
+      <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Governorate</th><th>Shipping Price (EGP)</th><th></th></tr></thead>
+        <tbody id="brandShippingTable"></tbody>
+      </table>
+      </div>
+      <div class="admin-toolbar" style="margin-top:16px;">
+        <select id="bsAddGov" style="min-width:180px;"></select>
+        <input type="number" id="bsAddPrice" min="0" step="1" placeholder="Price" style="width:110px;">
+        <button class="btn secondary" onclick="addBrandShippingRow()">+ Add Governorate</button>
+        <button class="btn" onclick="saveBrandShippingPrices()">Save Prices</button>
+      </div>
     </section>
 
     <section class="admin-section" id="sec-reviews">
@@ -2200,6 +2218,7 @@ function attachRealtimeListeners(){
   fbDb.collection('store').doc('atlas:customers').onSnapshot(snap=>{ if(snap.exists){ CUSTOMERS = snap.data().value || []; if(typeof renderCustomersTable==='function') renderCustomersTable(); } });
   fbDb.collection('store').doc('atlas:coupons').onSnapshot(snap=>{ if(snap.exists){ COUPONS = snap.data().value || []; if(typeof renderCouponsTable==='function') renderCouponsTable(); } });
   fbDb.collection('store').doc('atlas:shipping').onSnapshot(snap=>{ if(snap.exists){ SHIPPING = snap.data().value || SHIPPING; } });
+  fbDb.collection('store').doc('atlas:brandshipping').onSnapshot(snap=>{ if(snap.exists){ BRAND_SHIPPING = snap.data().value || BRAND_SHIPPING; if(typeof renderBrandShippingTable==='function' && document.getElementById('sec-brandshipping')) renderBrandShippingTable(); } });
   fbDb.collection('store').doc('atlas:returns').onSnapshot(snap=>{ if(snap.exists){ RETURNS = snap.data().value || []; if(typeof renderReturnsAdmin==='function' && document.getElementById('sec-returns')) renderReturnsAdmin(); if(typeof renderStatistics==='function' && document.getElementById('sec-statistics')) renderStatistics(); } });
   fbDb.collection('store').doc('atlas:returnrequests').onSnapshot(snap=>{
     if(!snap.exists) return;
@@ -2353,6 +2372,7 @@ if(fbMessaging){
 
 /* ================= STATE ================= */
 let PRODUCTS=[], ORDERS=[], CUSTOMERS=[], COUPONS=[], STATS=null, NOTIFS=[], BANNER=null, CART=[], SHIPPING={}, WISHLIST=[], RETURNS=[], RETURN_REQUESTS=[], BANNER_SLIDES=[];
+let BRAND_SHIPPING={}; // { [brandId]: { [governorate]: price } } — per-brand delivery prices, override the store default (SHIPPING) when an order is made up of a single brand's products
 // CATEGORIES: the approved, curated list of category names shown in "Shop by Category" — starts
 // with just these 4 so the homepage isn't cluttered until an admin approves more.
 // PENDING_CATEGORIES: new category names typed on the product form that are awaiting an admin
@@ -2628,6 +2648,7 @@ async function init(){
   CART = cacheGet('atlas:cart', []);
   WISHLIST = cacheGet('atlas:wishlist', []);
   SHIPPING = cacheGet('atlas:shipping', defaultShippingRates());
+  BRAND_SHIPPING = cacheGet('atlas:brandshipping', {});
   SETTINGS = cacheGet('atlas:settings', null) || defaultSettings();
   SIZEGUIDES = cacheGet('atlas:sizeguides', {});
   RETURNS = cacheGet('atlas:returns', []);
@@ -2683,7 +2704,7 @@ async function init(){
 
 async function syncFromFirestore(){
   if(!fbReady){ return; }
-  const [products, orders, customers, coupons, notifs, banner, bannerslides, stats, cart, wishlist, shipping, settings, sizeguides, returns, returnrequests, categoryimages, categories, pendingcategories, circleitems, brandsData, myprofile, lastviewed, academy, privatetrainers, trainerbookings, introslides, hometiles] = await Promise.all([
+  const [products, orders, customers, coupons, notifs, banner, bannerslides, stats, cart, wishlist, shipping, brandshipping, settings, sizeguides, returns, returnrequests, categoryimages, categories, pendingcategories, circleitems, brandsData, myprofile, lastviewed, academy, privatetrainers, trainerbookings, introslides, hometiles] = await Promise.all([
     getData('atlas:products', null, true),
     getData('atlas:orders', [], true),
     getData('atlas:customers', [], true),
@@ -2695,6 +2716,7 @@ async function syncFromFirestore(){
     getData('atlas:cart', [], false),
     getData('atlas:wishlist', [], false),
     getData('atlas:shipping', defaultShippingRates(), true),
+    getData('atlas:brandshipping', {}, true),
     getData('atlas:settings', null, true),
     getData('atlas:sizeguides', {}, true),
     getData('atlas:returns', [], true),
@@ -2721,7 +2743,7 @@ async function syncFromFirestore(){
   PRODUCTS = products || seedProducts();
   if(!products){ await setData('atlas:products', PRODUCTS, true); }
   ORDERS = orders; CUSTOMERS = customers; COUPONS = coupons; NOTIFS = notifs;
-  BANNER = banner; BANNER_SLIDES = bannerslides; STATS = stats; CART = cart; WISHLIST = wishlist; SHIPPING = shipping;
+  BANNER = banner; BANNER_SLIDES = bannerslides; STATS = stats; CART = cart; WISHLIST = wishlist; SHIPPING = shipping; BRAND_SHIPPING = brandshipping || {};
   SETTINGS = settings || defaultSettings();
   if(!settings){ await setData('atlas:settings', SETTINGS, true); }
   SIZEGUIDES = sizeguides;
@@ -3976,13 +3998,32 @@ function addToCartFromModal(){
 function buyItNow(){
   if(!currentProduct) return;
   const p = currentProduct, size = window._selSize||p.sizes[0], color = window._selColor||p.colors[0], qty = window._modalQty||1;
-  CHECKOUT_ITEMS = [{productId:p.id, name:p.name, image:p.image, price:(p.discount&&p.discount>0)?p.discount:p.price, size, color, qty}];
+  CHECKOUT_ITEMS = [{productId:p.id, name:p.name, image:p.image, price:(p.discount&&p.discount>0)?p.discount:p.price, size, color, qty, brandId:p.brandId||''}];
   openCheckout(false);
 }
+/* Every order must come from a single brand (or from house/no-brand products) — a customer
+   can't check out with items from two different brands mixed together. This is enforced right
+   here at add-to-cart time (so it's caught as early as possible) and re-checked in placeOrder()
+   as a final safety net. Products with no brand (brandId empty — "house" products) never block
+   or get blocked, so they can always sit in the bag alongside a single chosen brand. */
+function cartBrandIds(){
+  const ids = new Set();
+  CART.forEach(i=>{ if(i.brandId) ids.add(i.brandId); });
+  return ids;
+}
 function addToCart(p, size, color, qty){
+  if(p.brandId){
+    const ids = cartBrandIds();
+    if(ids.size && !ids.has(p.brandId)){
+      const otherBrand = BRANDS.find(b=>b.id===[...ids][0]);
+      const otherName = otherBrand ? otherBrand.name : (LANG==='ar' ? 'براند تاني' : 'another brand');
+      showToast(LANG==='ar' ? `سلتك فيها منتجات من ${otherName} — الأوردر لازم يكون من براند واحد بس` : `Your bag has items from ${otherName} — an order can only include one brand at a time`, 3200);
+      return;
+    }
+  }
   const existing = CART.find(i=>i.productId===p.id && i.size===size && i.color===color);
   if(existing){ existing.qty += qty; } else {
-    CART.push({productId:p.id, name:p.name, image:p.image, price:(p.discount&&p.discount>0)?p.discount:p.price, size, color, qty});
+    CART.push({productId:p.id, name:p.name, image:p.image, price:(p.discount&&p.discount>0)?p.discount:p.price, size, color, qty, brandId:p.brandId||''});
   }
   p.addToCart = (p.addToCart||0) + qty;
   // Update the UI instantly — don't make the tap wait on the network round-trip.
@@ -4060,9 +4101,23 @@ function populateGovernorateOptions(){
   sel.innerHTML = '<option value="">Select governorate</option>' + GOVERNORATES.map(g=>`<option value="${g}" ${g===current?'selected':''}>${g}</option>`).join('');
 }
 
+/* If every item in this order belongs to the same single brand, and that brand has set its own
+   price for the chosen governorate, that price is used instead of the store's default. Mixed-
+   brand or no-brand (house) orders — or a brand that hasn't set a custom price there — always
+   fall back to the store default (SHIPPING). */
+function shippingCostFor(gov, items){
+  if(!gov) return 0;
+  const ids = new Set(); (items||[]).forEach(i=>{ if(i.brandId) ids.add(i.brandId); });
+  if(ids.size===1){
+    const brandId = [...ids][0];
+    const mine = BRAND_SHIPPING[brandId];
+    if(mine && mine[gov]!=null) return mine[gov];
+  }
+  return SHIPPING[gov]!=null ? SHIPPING[gov] : 0;
+}
 function currentShippingCost(){
   const gov = document.getElementById('ckGov').value;
-  return gov && SHIPPING[gov]!=null ? SHIPPING[gov] : 0;
+  return shippingCostFor(gov, CHECKOUT_ITEMS);
 }
 
 function renderCheckoutInvoice(){
@@ -4096,6 +4151,14 @@ async function placeOrder(){
   const msg = document.getElementById('ckMsg');
   if(!name || !phone || !phone2 || !gov || !address){ msg.textContent='Please fill in all fields.'; msg.style.color='var(--danger)'; return; }
 
+  // Final safety net: an order can never mix products from two different brands.
+  const orderBrandIds = new Set(); CHECKOUT_ITEMS.forEach(i=>{ if(i.brandId) orderBrandIds.add(i.brandId); });
+  if(orderBrandIds.size > 1){
+    msg.style.color='var(--danger)';
+    msg.textContent = LANG==='ar' ? 'مينفعش تطلب من أكتر من براند في نفس الأوردر — رجّع للسلة وسيب براند واحد بس.' : "You can't order from more than one brand at once — go back to your bag and keep just one brand.";
+    return;
+  }
+
   // Instant visual feedback the moment the button is tapped, so it never looks "stuck" with no response.
   const origBtnText = btn ? btn.textContent : '';
   if(btn){ btn.disabled = true; btn.style.opacity = '0.65'; btn.textContent = 'Sending order…'; }
@@ -4105,7 +4168,7 @@ async function placeOrder(){
     // Was this checkout started from the saved bag? Only then do we empty the bag afterward.
     const wasFromCart = CHECKOUT_ITEMS.length===CART.length && CHECKOUT_ITEMS.every((i,idx)=>CART[idx] && CART[idx].productId===i.productId && CART[idx].size===i.size && CART[idx].color===i.color);
 
-    const shipping = SHIPPING[gov]!=null ? SHIPPING[gov] : 0;
+    const shipping = shippingCostFor(gov, CHECKOUT_ITEMS);
     const subtotal = checkoutSubtotal();
     const amount = subtotal + shipping;
     const pointsUsed = appliedPointsRedeem ? appliedPointsRedeem.points : 0;
@@ -4259,6 +4322,7 @@ function applyAdminRoleScoping(){
   const navBrandReturns = document.getElementById('navBrandReturns');
   const navBrandReviews = document.getElementById('navBrandReviews');
   const navBrandNotifications = document.getElementById('navBrandNotifications');
+  const navBrandShipping = document.getElementById('navBrandShipping');
   if(isBrandAdmin()){
     nav.classList.add('role-brand');
     adminEl.classList.add('brand-mode');
@@ -4268,6 +4332,7 @@ function applyAdminRoleScoping(){
     if(navBrandReturns) navBrandReturns.classList.remove('hidden');
     if(navBrandReviews) navBrandReviews.classList.remove('hidden');
     if(navBrandNotifications) navBrandNotifications.classList.remove('hidden');
+    if(navBrandShipping) navBrandShipping.classList.remove('hidden');
     renderBrandNotifications();
   }else{
     nav.classList.remove('role-brand');
@@ -4278,6 +4343,7 @@ function applyAdminRoleScoping(){
     if(navBrandReturns) navBrandReturns.classList.add('hidden');
     if(navBrandReviews) navBrandReviews.classList.add('hidden');
     if(navBrandNotifications) navBrandNotifications.classList.add('hidden');
+    if(navBrandShipping) navBrandShipping.classList.add('hidden');
   }
 }
 function exitAdmin(){
@@ -4301,6 +4367,7 @@ function switchAdminSection(sec){
   if(sec==='customers') renderCustomersTable();
   if(sec==='coupons') renderCouponsTable();
   if(sec==='shipping') renderShippingAdmin();
+  if(sec==='brandshipping') renderBrandShippingTable();
   if(sec==='sizeguides') renderSizeGuidesAdmin();
   if(sec==='categoryimages') renderCategoryImagesAdmin();
   if(sec==='circleitems') renderCircleItemsAdmin();
@@ -5017,6 +5084,51 @@ async function saveShipping(){
     SHIPPING[inp.dataset.gov] = parseFloat(inp.value)||0;
   });
   await setData('atlas:shipping', SHIPPING, true);
+  showToast('Shipping prices updated');
+}
+
+/* ================= BRAND SHIPPING (per-brand, set by a logged-in brand admin) =================
+   Each brand only sets prices for the governorates it actually wants to override — any
+   governorate it hasn't added here just uses the store's default price (see shippingCostFor()). */
+function renderBrandShippingTable(){
+  const b = myBrand(); if(!b) return;
+  const mine = BRAND_SHIPPING[b.id] || {};
+  const govsSet = Object.keys(mine);
+  const tbody = document.getElementById('brandShippingTable');
+  tbody.innerHTML = govsSet.length ? govsSet.map(g=>`
+    <tr><td>${g}</td><td><input type="number" min="0" step="1" data-gov="${g}" class="bs-price-input" value="${mine[g]}" style="width:120px;"></td>
+    <td><button class="btn secondary" onclick="removeBrandShippingRow('${g.replace(/'/g,"\\'")}')">✕ Remove</button></td></tr>
+  `).join('') : `<tr><td colspan="3" style="color:var(--muted);">No custom prices set yet — the store's default shipping price is used for every governorate. Add a governorate below to set your own price for it.</td></tr>`;
+  const addSel = document.getElementById('bsAddGov');
+  if(addSel){
+    const remaining = GOVERNORATES.filter(g=>!govsSet.includes(g));
+    addSel.innerHTML = remaining.length ? remaining.map(g=>`<option value="${g}">${g}</option>`).join('') : `<option value="">— all governorates added —</option>`;
+  }
+}
+function addBrandShippingRow(){
+  const b = myBrand(); if(!b) return;
+  const gov = document.getElementById('bsAddGov').value;
+  const priceInput = document.getElementById('bsAddPrice');
+  const price = parseFloat(priceInput.value);
+  if(!gov){ showToast('Pick a governorate'); return; }
+  if(isNaN(price) || price<0){ showToast('Enter a valid price'); return; }
+  if(!BRAND_SHIPPING[b.id]) BRAND_SHIPPING[b.id] = {};
+  BRAND_SHIPPING[b.id][gov] = price;
+  priceInput.value = '';
+  renderBrandShippingTable();
+}
+function removeBrandShippingRow(gov){
+  const b = myBrand(); if(!b || !BRAND_SHIPPING[b.id]) return;
+  delete BRAND_SHIPPING[b.id][gov];
+  renderBrandShippingTable();
+}
+async function saveBrandShippingPrices(){
+  const b = myBrand(); if(!b) return;
+  if(!BRAND_SHIPPING[b.id]) BRAND_SHIPPING[b.id] = {};
+  document.querySelectorAll('.bs-price-input').forEach(inp=>{
+    BRAND_SHIPPING[b.id][inp.dataset.gov] = parseFloat(inp.value)||0;
+  });
+  await setData('atlas:brandshipping', BRAND_SHIPPING, true);
   showToast('Shipping prices updated');
 }
 
