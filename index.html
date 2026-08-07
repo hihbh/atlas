@@ -551,7 +551,22 @@ td select{padding:6px 8px; font-size:12px;}
 .switch.on{background:var(--maroon-light);}
 .switch::after{content:''; position:absolute; top:2px; left:2px; width:18px; height:18px; background:var(--cream); border-radius:50%; transition:left .15s;}
 .switch.on::after{left:20px;}
-.store-offline-banner{position:fixed; inset:0; z-index:150; background:rgba(4,4,4,0.96); display:flex; align-items:center; justify-content:center; text-align:center; padding:30px;}
+.store-offline-banner{position:fixed; inset:0; z-index:150; background:#0b141a; display:flex; flex-direction:column;}
+/* ---------- WhatsApp-style "store closed" screen ---------- */
+.wa-closed-header{display:flex; align-items:center; gap:12px; padding:14px 16px; background:#202c33; box-shadow:0 1px 0 rgba(255,255,255,.05);}
+.wa-closed-avatar{width:40px; height:40px; border-radius:50%; object-fit:cover; background:var(--maroon); display:flex; align-items:center; justify-content:center; font-family:'Cormorant SC',serif; font-weight:700; color:#fff; font-size:16px; flex-shrink:0;}
+.wa-closed-who{flex:1; text-align:left;}
+html[dir="rtl"] .wa-closed-who{text-align:right;}
+.wa-closed-name{color:#e9edef; font-size:15px; font-weight:500;}
+.wa-closed-status{color:#8696a0; font-size:12.5px; margin-top:1px;}
+.wa-closed-body{flex:1; overflow-y:auto; padding:22px 14px; background-image:radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px); background-size:18px 18px;}
+.wa-bubble-row{display:flex; justify-content:flex-end; margin-bottom:6px;}
+html[dir="rtl"] .wa-bubble-row{justify-content:flex-start;}
+.wa-bubble{position:relative; max-width:78%; background:#005c4b; color:#e9edef; padding:8px 10px 6px; border-radius:8px; font-size:14px; line-height:1.55; box-shadow:0 1px 1px rgba(0,0,0,.3);}
+.wa-bubble-time{display:flex; justify-content:flex-end; align-items:center; gap:4px; margin-top:2px; font-size:10.5px; color:#8fd3c4;}
+.wa-bubble-time svg{width:14px; height:14px;}
+.wa-closed-footer{padding:14px 16px 22px; text-align:center;}
+.wa-closed-footer p{color:#8696a0; font-size:12px; letter-spacing:.5px;}
 .thumb{width:44px; height:56px; object-fit:cover; filter:grayscale(.4);}
 .row-actions{display:flex; gap:8px;}
 .row-actions button{background:none; color:var(--muted); font-size:16px;}
@@ -764,7 +779,6 @@ tbody tr:hover{background:rgba(161,49,72,0.06);}
 .pc-tile-body{flex:1; min-width:0;}
 .pc-tile .pc-tile-title{font-family:'Cormorant SC',serif; font-size:21px; letter-spacing:3px; color:var(--cream); text-transform:uppercase;}
 .pc-tile .pc-tile-sub{font-size:11px; color:var(--muted); margin-top:3px; letter-spacing:.3px;}
-.pc-tile-icons{display:flex; gap:8px; margin-top:9px; font-size:14px;}
 .pc-tile-arrow{flex-shrink:0; width:28px; height:28px; border-radius:50%; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:var(--gold); font-size:14px;}
 
 /* ---------- ACADEMY / PRIVATE (customer-facing) ---------- */
@@ -836,7 +850,6 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
         <div class="pc-tile-body">
           <div class="pc-tile-title" id="pcTitleStore">Store</div>
           <div class="pc-tile-sub" id="pcSubStore">Shop the ATLAS collection</div>
-          <div class="pc-tile-icons">👕 👟 ⚽ 🥤</div>
         </div>
         <div class="pc-tile-arrow">→</div>
       </div>
@@ -845,7 +858,6 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
         <div class="pc-tile-body">
           <div class="pc-tile-title" id="pcTitleAcademy">Academy</div>
           <div class="pc-tile-sub" id="pcSubAcademy">Handball academy training for all levels</div>
-          <div class="pc-tile-icons">👥 🏃 🥅</div>
         </div>
         <div class="pc-tile-arrow">→</div>
       </div>
@@ -854,7 +866,6 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
         <div class="pc-tile-body">
           <div class="pc-tile-title" id="pcTitleCamp">Camp</div>
           <div class="pc-tile-sub" id="pcSubCamp">Summer &amp; Winter camps and schedules</div>
-          <div class="pc-tile-icons">📅 ☀️ ❄️</div>
         </div>
         <div class="pc-tile-arrow">→</div>
       </div>
@@ -863,7 +874,6 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
         <div class="pc-tile-body">
           <div class="pc-tile-title" id="pcTitlePrivate">Private</div>
           <div class="pc-tile-sub" id="pcSubPrivate">Personal training with expert coaches</div>
-          <div class="pc-tile-icons">👤 ⏱ 🏋</div>
         </div>
         <div class="pc-tile-arrow">→</div>
       </div>
@@ -1617,6 +1627,11 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
           <div><b>Store Online</b><div style="color:var(--muted); font-size:12px; margin-top:2px;">Turn off to close the storefront to visitors temporarily</div></div>
           <div class="switch on" id="stActiveSwitch" onclick="toggleStoreActive()"></div>
         </div>
+        <div style="margin-top:14px;">
+          <label>Closed Store Message</label>
+          <textarea id="stClosedMessage" rows="3" placeholder="الرسالة اللي هتظهر للعملاء لما الاستور يكون قافل" style="width:100%; resize:vertical;"></textarea>
+          <div style="font-size:11px; color:var(--muted); margin-top:4px;">Shown to visitors — as a WhatsApp-style message — whenever "Store Online" is off.</div>
+        </div>
         <div class="form-actions">
           <button class="btn" onclick="saveSettings()">Save Settings</button>
         </div>
@@ -2017,10 +2032,22 @@ html[dir="rtl"] .tc-soon-badge{left:auto; right:8px;}
 </div>
 
 <div class="store-offline-banner hidden" id="storeOfflineBanner">
-  <div>
-    <h2 class="serif" style="font-size:26px; letter-spacing:3px; color:var(--maroon-light); margin-bottom:10px;">STORE CLOSED</h2>
-    <p style="color:var(--muted); font-size:14px;">We're currently offline for maintenance. Please check back soon.</p>
+  <div class="wa-closed-header">
+    <div class="wa-closed-avatar" id="waClosedAvatar"></div>
+    <div class="wa-closed-who">
+      <div class="wa-closed-name" id="waClosedName">ATLAS</div>
+      <div class="wa-closed-status" data-i18n="waClosedStatus">Store closed</div>
+    </div>
   </div>
+  <div class="wa-closed-body">
+    <div class="wa-bubble-row">
+      <div class="wa-bubble">
+        <div id="waClosedMsg"></div>
+        <div class="wa-bubble-time"><span id="waClosedTime"></span><svg viewBox="0 0 16 15" fill="#53bdeb"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.879a.32.32 0 0 1-.484.033l-.358-.325a.319.319 0 0 0-.484.032l-.378.483a.418.418 0 0 0 .036.541l1.32 1.266c.143.14.361.125.484-.033l6.272-8.048a.366.366 0 0 0-.064-.512zM11.01 3.316l-.478-.372a.365.365 0 0 0-.51.063l-5.359 6.872a.32.32 0 0 1-.484.033L2.6 8.246a.319.319 0 0 0-.484.032l-.378.483a.418.418 0 0 0 .036.541l1.87 1.885c.143.14.361.125.484-.033l6.929-8.848a.366.366 0 0 0-.064-.512z"></path></svg></div>
+      </div>
+    </div>
+  </div>
+  <div class="wa-closed-footer"><p data-i18n="waClosedFooter">Check back soon — thank you for your patience.</p></div>
 </div>
 
 <script>
@@ -2409,6 +2436,7 @@ let appliedPointsRedeem=null; // {points, percent} — the loyalty-points tier c
 function defaultSettings(){
   return { name:'ATLAS', currency:'EGP', whatsapp:'', address:'Alexandria, Egypt', logo:null,
     social:{instagram:'',facebook:'',tiktok:'',snapchat:''}, active:true, password:'123', lastLogin:null,
+    closedMessage:'الاستور قافل دلوقتي، هنكون معاكم تاني قريب. تابعونا عشان تعرفوا معاد الفتح ❤️',
     loyalty:{ pointsPerOrder:10, tiers:[{points:100,percent:5},{points:250,percent:10},{points:500,percent:20}] } };
 }
 function defaultLoyalty(){ return { pointsPerOrder:10, tiers:[{points:100,percent:5},{points:250,percent:10},{points:500,percent:20}] }; }
@@ -2539,6 +2567,7 @@ const I18N = {
     trackOrder:'Track Order', yourDetails:'Your details', fullName:'Full name',
     altPhoneNumber:'Alternative phone number', governorate:'Governorate', address:'Address', placeOrder:'Place Order',
     orderConfirmed:'Order Confirmed',
+    waClosedStatus:'Store closed', waClosedFooter:'Check back soon — thank you for your patience.',
     addToCart:'Add to Cart', buyItNow:'Buy It Now', soldOut:'Sold Out', sizeGuide:'Size Guide',
     writeReview:'Write a Review', reviews:'Reviews', yourName:'Your name', yourReview:'Your review', submit:'Submit',
     allProductsMenu:'All Products', trackOrderMenu:'Track Order', aboutUs:'About Us', contactUs:'Contact Us',
@@ -2580,6 +2609,7 @@ const I18N = {
     trackOrder:'تتبع الطلب', yourDetails:'بياناتك', fullName:'الاسم الكامل',
     altPhoneNumber:'رقم هاتف بديل', governorate:'المحافظة', address:'العنوان', placeOrder:'تأكيد الطلب',
     orderConfirmed:'تم تأكيد الطلب',
+    waClosedStatus:'الاستور قافل دلوقتي', waClosedFooter:'هنكون معاكم تاني قريب — شكرًا لصبركم.',
     addToCart:'أضف إلى السلة', buyItNow:'اشترِ الآن', soldOut:'نفدت الكمية', sizeGuide:'دليل المقاسات',
     writeReview:'أضف تقييم', reviews:'التقييمات', yourName:'اسمك', yourReview:'تقييمك', submit:'إرسال',
     allProductsMenu:'كل المنتجات', trackOrderMenu:'تتبع الطلب', aboutUs:'من نحن', contactUs:'تواصل معنا',
@@ -6651,6 +6681,7 @@ function renderSettingsForm(){
   document.getElementById('stSnapchat').value = (s.social&&s.social.snapchat) || '';
   document.getElementById('admLastLogin').textContent = s.lastLogin || '—';
   document.getElementById('stActiveSwitch').classList.toggle('on', s.active!==false);
+  document.getElementById('stClosedMessage').value = s.closedMessage || defaultSettings().closedMessage;
   const prev = document.getElementById('stLogoPreview');
   if(s.logo){ prev.src = s.logo; prev.classList.remove('hidden'); } else { prev.classList.add('hidden'); }
   const loy = s.loyalty || defaultLoyalty();
@@ -6713,6 +6744,7 @@ async function saveSettings(){
     tiers: currentLoyaltyTiersFromForm().filter(t=>t.points>0 && t.percent>0).sort((a,b)=>a.points-b.points)
   };
   SETTINGS.active = document.getElementById('stActiveSwitch').classList.contains('on');
+  SETTINGS.closedMessage = document.getElementById('stClosedMessage').value.trim() || defaultSettings().closedMessage;
   if(window._stLogoData){ SETTINGS.logo = window._stLogoData; window._stLogoData = null; }
   await setData('atlas:settings', SETTINGS, true);
   applySettingsToStorefront();
@@ -6752,7 +6784,19 @@ function applySettingsToStorefront(){
     `;
   }
   const banner = document.getElementById('storeOfflineBanner');
-  if(banner) banner.classList.toggle('hidden', s.active!==false || ADMIN_LOGGED_IN);
+  const showBanner = s.active===false && !ADMIN_LOGGED_IN;
+  if(banner) banner.classList.toggle('hidden', !showBanner);
+  if(banner && showBanner){
+    const nameEl = document.getElementById('waClosedName'); if(nameEl) nameEl.textContent = s.name || 'ATLAS';
+    const avatarEl = document.getElementById('waClosedAvatar');
+    if(avatarEl){
+      if(s.logo){ avatarEl.innerHTML = `<img src="${s.logo}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`; }
+      else { avatarEl.textContent = (s.name||'A').trim().charAt(0).toUpperCase(); }
+    }
+    const msgEl = document.getElementById('waClosedMsg'); if(msgEl) msgEl.textContent = s.closedMessage || defaultSettings().closedMessage;
+    const timeEl = document.getElementById('waClosedTime');
+    if(timeEl) timeEl.textContent = new Date().toLocaleTimeString(LANG==='ar'?'ar-EG':'en-US', {hour:'2-digit', minute:'2-digit'});
+  }
 }
 
 /* ================= DATA MANAGER ================= */
