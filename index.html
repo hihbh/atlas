@@ -2175,6 +2175,28 @@ async function getData(key, def, shared){
     return val;
   }catch(e){ console.error('getData failed for '+key, e); return def; }
 }
+/* Like getData, but tells the caller WHY it got nothing — a genuinely-missing document
+   ({exists:false}) vs a timed-out/failed read ({failed:true}). getData collapses both
+   into the same "def" value, which is fine for most callers but dangerous for anything
+   that reacts to "no data" by seeding defaults AND persisting them back (products,
+   categories, settings) — a plain network hiccup would look identical to "brand-new
+   store" and silently overwrite real data with placeholders. Use this instead for those. */
+async function getDataStrict(key, shared){
+  if(!fbReady) return {failed:true};
+  try{
+    const uidVal = shared ? null : await ensureAuth();
+    const ref = shared
+      ? fbDb.collection('store').doc(key)
+      : fbDb.collection('users').doc(uidVal).collection('private').doc(key);
+    const TIMED_OUT = Symbol('timed_out');
+    const snap = await withTimeout(ref.get(), 8000, TIMED_OUT);
+    if(snap === TIMED_OUT) return {failed:true};
+    if(!snap.exists) return {failed:false, exists:false, value:undefined};
+    const val = snap.data().value;
+    cacheSet(key, val);
+    return {failed:false, exists:true, value:val};
+  }catch(e){ console.error('getDataStrict failed for '+key, e); return {failed:true}; }
+}
 async function setData(key, val, shared){
   cacheSet(key, val); // reflect the change locally immediately, don't wait on the network round-trip
   if(!fbReady) return false;
@@ -2734,8 +2756,8 @@ async function init(){
 
 async function syncFromFirestore(){
   if(!fbReady){ return; }
-  const [products, orders, customers, coupons, notifs, banner, bannerslides, stats, cart, wishlist, shipping, brandshipping, settings, sizeguides, returns, returnrequests, categoryimages, categories, pendingcategories, circleitems, brandsData, myprofile, lastviewed, academy, privatetrainers, trainerbookings, introslides, hometiles] = await Promise.all([
-    getData('atlas:products', null, true),
+  const [productsResult, orders, customers, coupons, notifs, banner, bannerslides, stats, cart, wishlist, shipping, brandshipping, settingsResult, sizeguides, returns, returnrequests, categoryimages, categoriesResult, pendingcategories, circleitems, myprofile, lastviewed, academy, privatetrainers, trainerbookings, introslides, hometiles] = await Promise.all([
+    getDataStrict('atlas:products', true),
     getData('atlas:orders', [], true),
     getData('atlas:customers', [], true),
     getData('atlas:coupons', [], true),
@@ -2747,15 +2769,14 @@ async function syncFromFirestore(){
     getData('atlas:wishlist', [], false),
     getData('atlas:shipping', defaultShippingRates(), true),
     getData('atlas:brandshipping', {}, true),
-    getData('atlas:settings', null, true),
+    getDataStrict('atlas:settings', true),
     getData('atlas:sizeguides', {}, true),
     getData('atlas:returns', [], true),
     getData('atlas:returnrequests', [], true),
     getData('atlas:categoryimages', {}, true),
-    getData('atlas:categories', null, true),
+    getDataStrict('atlas:categories', true),
     getData('atlas:pendingcategories', [], true),
     getData('atlas:circleitems', null, true),
-    getData('atlas:brands', [], true),
     getData('atlas:myprofile', null, false),
     getData('atlas:lastviewed', null, false),
     getData('atlas:academy', [], true),
@@ -2770,20 +2791,30 @@ async function syncFromFirestore(){
   const prevSlidesJSON = JSON.stringify(BANNER_SLIDES);
   const prevSettingsJSON = JSON.stringify(SETTINGS);
 
-  PRODUCTS = products || seedProducts();
-  if(!products){ await setData('atlas:products', PRODUCTS, true); }
+  // A failed/timed-out read (network hiccup) leaves PRODUCTS exactly as it already is
+  // (loaded from local cache at startup) — it must NEVER be treated as "store has no
+  // products yet" and reseeded, since that reseed also gets persisted back to Firestore
+  // and would wipe out everyone's real product catalog over a transient glitch.
+  if(!productsResult.failed){
+    PRODUCTS = productsResult.exists ? productsResult.value : seedProducts();
+    if(!productsResult.exists){ await setData('atlas:products', PRODUCTS, true); }
+  }
   ORDERS = orders; CUSTOMERS = customers; COUPONS = coupons; NOTIFS = notifs;
   BANNER = banner; BANNER_SLIDES = bannerslides; STATS = stats; CART = cart; WISHLIST = wishlist; SHIPPING = shipping; BRAND_SHIPPING = brandshipping || {};
-  SETTINGS = settings || defaultSettings();
-  if(!settings){ await setData('atlas:settings', SETTINGS, true); }
+  if(!settingsResult.failed){
+    SETTINGS = settingsResult.exists ? settingsResult.value : defaultSettings();
+    if(!settingsResult.exists){ await setData('atlas:settings', SETTINGS, true); }
+  }
   SIZEGUIDES = sizeguides;
   RETURNS = returns;
   RETURN_REQUESTS = returnrequests;
   CATEGORY_IMAGES = categoryimages || {};
   const prevCategoriesJSON = JSON.stringify(CATEGORIES);
   const prevPendingCategoriesJSON = JSON.stringify(PENDING_CATEGORIES);
-  CATEGORIES = categories || ['تيشرت','شورت','جزم','كورة'];
-  if(!categories){ await setData('atlas:categories', CATEGORIES, true); }
+  if(!categoriesResult.failed){
+    CATEGORIES = categoriesResult.exists ? categoriesResult.value : ['تيشرت','شورت','جزم','كورة'];
+    if(!categoriesResult.exists){ await setData('atlas:categories', CATEGORIES, true); }
+  }
   PENDING_CATEGORIES = pendingcategories || [];
   const prevCircleItemsJSON = JSON.stringify(CIRCLE_ITEMS);
   CIRCLE_ITEMS = circleitems || defaultCircleItems();
@@ -2791,12 +2822,11 @@ async function syncFromFirestore(){
     renderCircleItems();
     if(document.getElementById('sec-circleitems')) renderCircleItemsAdmin();
   }
-  const prevBrandsJSON = JSON.stringify(BRANDS);
-  BRANDS = brandsData || [];
-  if(JSON.stringify(BRANDS) !== prevBrandsJSON){
-    if(typeof renderBrandShowcase==='function') renderBrandShowcase();
-    if(document.getElementById('sec-brands')) renderBrandsAdmin();
-  }
+  // NOTE: BRANDS is intentionally NOT fetched/overwritten here. It already has its own
+  // live onSnapshot listener (see attachRealtimeListeners -> 'atlas:brands') which is the
+  // single source of truth. Reading it again in this one-time batch created a race: if a
+  // brand was added while this batch's request was still in flight, the late-arriving
+  // stale result used to overwrite BRANDS and make the newly added brand disappear.
   MY_PROFILE = myprofile || MY_PROFILE;
   MY_LAST_VIEWED = lastviewed || MY_LAST_VIEWED;
   const prevAcademyJSON = JSON.stringify(ACADEMY);
