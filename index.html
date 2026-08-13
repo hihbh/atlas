@@ -2197,9 +2197,27 @@ async function getDataStrict(key, shared){
     return {failed:false, exists:true, value:val};
   }catch(e){ console.error('getDataStrict failed for '+key, e); return {failed:true}; }
 }
+/* Firestore rejects a document write once the document passes ~1MiB. This whole app stores
+   each data list (products, brands, notifications...) as ONE document, and product/brand
+   photos are embedded straight into that document as base64 text — so every photo added
+   eats into that same 1MiB budget shared by the WHOLE list. Once a list crosses the line,
+   Firestore silently rejects every future write to it: it still saves to THIS browser's
+   local cache (so it looks fine here), but never reaches the server — so anyone else, or
+   this same browser after its cache clears/expires, sees the old version without the
+   latest additions. This check catches that BEFORE attempting the network call, so we can
+   tell the admin exactly what happened instead of failing silently. */
+const FIRESTORE_DOC_SAFE_BYTES = 900000; // leaves headroom under the real ~1,048,576 byte cap
+function approxByteSize(val){
+  try{ return new Blob([JSON.stringify(val)]).size; }
+  catch(e){ try{ return JSON.stringify(val).length; }catch(e2){ return 0; } }
+}
 async function setData(key, val, shared){
   cacheSet(key, val); // reflect the change locally immediately, don't wait on the network round-trip
   if(!fbReady) return false;
+  if(shared && approxByteSize(val) > FIRESTORE_DOC_SAFE_BYTES){
+    console.error(`setData: "${key}" is too large to save to Firestore (>${FIRESTORE_DOC_SAFE_BYTES} bytes) — it was saved to this browser only. Remove/compress some photos or delete old entries.`);
+    return false;
+  }
   try{
     const uidVal = shared ? null : await ensureAuth();
     const ref = shared
@@ -4297,6 +4315,12 @@ async function placeOrder(){
 async function persistProducts(){ return await setData('atlas:products', PRODUCTS, true); }
 async function addNotification(type, message, brandIds){
   NOTIFS.unshift({id:uid('n'), type, message, date:new Date().toISOString(), read:false, brandIds:(brandIds||[]).filter(Boolean)});
+  // Notifications only ever grew (unshift, never trimmed) — a busy store could eventually
+  // push this shared document toward the Firestore size limit too, which would then make
+  // even "mark as read" silently stop saving for both the main and brand admins (badge
+  // counts would then never match what's actually still unread). Keeping the most recent
+  // 300 is more than enough for the admin notification feed and keeps this document small.
+  if(NOTIFS.length > 300) NOTIFS.length = 300;
   await setData('atlas:notifications', NOTIFS, true);
 }
 /* Returns the distinct brandIds touched by an order's line items, so an order/stock/return
@@ -4698,7 +4722,11 @@ async function saveProduct(){
   if(needsApproval) await queuePendingCategory(category, productId);
   closeProductForm();
   renderProductsTable();
-  if(saved===false) showToast('⚠ Save may have failed — try fewer or smaller photos');
+  if(saved===false){
+    alert(LANG==='ar'
+      ? '⚠ المنتج اتحفظ على الجهاز ده بس مش على السيرفر — قائمة المنتجات بقت كبيرة أوي (غالباً من كتر الصور). لو مسكرتش الصفحة أو مسحتش الكاش، المنتج هيفضل ظاهر عندك، لكنه هيختفي عند أي حد تاني أو بعد فترة. احذف/أرشف منتجات قديمة أو قلل عدد صور المنتجات عشان القائمة ترجع تتحفظ.'
+      : "⚠ This product saved to your device only, not to the server — the product list has gotten too large (usually from too many photos). It will disappear for anyone else, or after a while on this device too. Archive/delete some old products or reduce photos per product so saving works again.");
+  }
   else if(needsApproval) showToast(LANG==='ar' ? 'اتحفظ المنتج — الكاتيجوري الجديدة هتظهر في المتجر بعد ما تحط لها صورة' : 'Product saved — the new category will appear on the storefront once its cover image is set');
   else showToast('Product saved');
 }
@@ -5929,7 +5957,11 @@ async function saveBrand(){
   renderBrandsAdmin();
   renderBrandShowcase();
   closeBrandForm();
-  if(brandSaved===false) showToast(LANG==='ar' ? '⚠ ممكن الحفظ يكون فشل — جرب لوجو أصغر' : '⚠ Save may have failed — try a smaller logo image');
+  if(brandSaved===false){
+    alert(LANG==='ar'
+      ? '⚠ البراند اتحفظ على الجهاز ده بس مش على السيرفر — قائمة البراندات بقت كبيرة أوي (غالباً من كتر اللوجوهات). هيختفي عند أي حد تاني أو بعد فترة على الجهاز ده. جرب لوجو أصغر أو احذف براندات مش مستخدمة.'
+      : '⚠ This brand saved to your device only, not to the server — the brand list has gotten too large (usually from too many logos). It will disappear for anyone else, or after a while on this device too. Try a smaller logo or remove unused brands.');
+  }
   else showToast(LANG==='ar'?'تم حفظ البراند':'Brand saved');
 }
 async function deleteBrand(id){
@@ -7075,7 +7107,12 @@ function cropModalConfirm(){
   const s = _cropState; if(!s){ processNextCropItem(); return; }
   const frame = document.getElementById('cropFrame');
   const frameRect = frame.getBoundingClientRect();
-  const OUT_W = 900, OUT_H = Math.round(OUT_W/_cropRatio);
+  // Every photo saved here is embedded as base64 text straight into a single shared
+  // Firestore document (the whole product/brand/banner list shares ONE ~1MiB budget) —
+  // so a smaller output size here directly means more products/brands fit before saving
+  // starts silently failing. 640px at quality 0.72 is still sharp on a phone-sized product
+  // card while using roughly half the bytes of the old 900px/0.85 settings.
+  const OUT_W = 640, OUT_H = Math.round(OUT_W/_cropRatio);
   const canvas = document.createElement('canvas');
   canvas.width = OUT_W; canvas.height = OUT_H;
   const ctx = canvas.getContext('2d');
@@ -7088,7 +7125,7 @@ function cropModalConfirm(){
   ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, OUT_W, OUT_H);
   let dataUrl;
   try{
-    dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    dataUrl = canvas.toDataURL('image/jpeg', 0.72);
   }catch(err){
     showToast(LANG==='ar' ? 'مينفعش تعدل صورة افتراضية من الإنترنت — ارفع صورة جديدة' : "Can't adjust this placeholder image — upload a new photo instead");
     processNextCropItem();
